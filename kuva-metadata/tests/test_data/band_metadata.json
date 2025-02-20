@@ -1,0 +1,55 @@
+{
+    "index": 0,
+    "wavelength": [
+        470.0,
+        "nanometer"
+    ],
+    "setpoints": [
+        23013,
+        23299,
+        22820
+    ],
+    "start_acquisition_date": "2025-02-14T16:08:11.678034Z",
+    "end_acquisition_date": "2025-02-14T16:08:11.751300Z",
+    "frames": [
+        {
+            "index": 0,
+            "start_acquisition_date": "2025-02-14T16:08:11.678034Z",
+            "end_acquisition_date": "2025-02-14T16:08:11.679234Z",
+            "integration_time": [
+                1.2,
+                "second"
+            ],
+            "sat_ecef_orientation": [
+                0.15371364231716572,
+                0.0650645942561703,
+                -0.8868115126457818,
+                -0.4309339772295729
+            ],
+            "position": {
+                "geom": "POINT Z (1282374.8999436763 -5181851.839868248 4328138.614476594)",
+                "crs_epsg": 4978
+            }
+        },
+        {
+            "index": 1,
+            "start_acquisition_date": "2025-02-14T16:08:11.714093Z",
+            "end_acquisition_date": "2025-02-14T16:08:11.715293Z",
+            "integration_time": [
+                1.2,
+                "second"
+            ],
+            "sat_ecef_orientation": [
+                0.1537126752809607,
+                0.06506328972675042,
+                -0.8868108590953501,
+                -0.43093587359547336
+            ],
+            "position": {
+                "geom": "POINT Z (1282357.93811973 -5182031.914301707 4327928.366459653)",
+                "crs_epsg": 4978
+            }
+        }
+    ],
+    "reference_frame_index": null
+}
