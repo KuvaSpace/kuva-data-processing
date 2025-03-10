@@ -24,13 +24,12 @@ make-l1-meta = "kuva_reader.reader.level1:generate_level_1_metafile"
 python = ">=3.10,<3.11"
 numpy = "^1.26.4"
 numpy-quaternion = "^2022.4.4"
-xarray = "^2022.12.0"
-rioxarray = "^0.12.4"
-rasterio = "^1.4.1"
-psycopg = "^3.2.3"
 dask = "^2023.12.1"
 pint = "^0.22"
-networkx = "^3.4.2"
+psycopg = "^3.2.3"
+rasterio = "^1.4.1"
+xarray = "^2022.12.0"
+rioxarray = "^0.12.4"
 
 [tool.ruff.lint]
 select = [ "E", "F", "A", "DTZ", "NPY", "I", "ISC", "B003", "B004", "B015", "PTH", "D100", "D101", "D102", "D103", "D104", "D105", "D200", "W191", "W291", "W293", "N801", "N804", "N805", "T100", "S105", "S106", "S108", "S604", "S602", "S609", "UP003", "UP005", "UP006", "UP007", "UP008", "UP032", "UP035", "RUF001", "RUF200", "RUF013", "C901", "COM818", "RSE102", "EM101",]
@@ -54,7 +53,7 @@ convention = "numpy"
 "__init__.py" = [ "F401", "D104", "E402",]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.2"
-ruff = "^0.1.1"
 hypothesis = "^6.72.0"
 mypy = "^1.2.0"
+pytest = "^7.4.2"
+ruff = "^0.1.1"

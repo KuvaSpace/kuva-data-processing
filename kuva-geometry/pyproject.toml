@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "kuva-geometry"
 version = "0.1.0"
-description = ""
+description = "Definitions and helper functionalities for Kuva Space geometric operations"
 authors = [ "Guillem Ballesteros <guillem@kuvaspace.com>",]
 
 [tool.ruff]
@@ -17,12 +17,8 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 python = ">=3.10,<3.11"
 numpy-quaternion = "^2022.4.4"
 numpy = "^1.26.4"
-shapely = "^2.0.6"
-pydantic = "^2.10.6"
 pint = "^0.22"
-pytz = "^2023.4"
-rich = "^13.9.4"
-rasterio = "^1.4.3"
+sympy = "^1.13.3"
 
 [tool.ruff.lint]
 select = [ "E", "F", "A", "DTZ", "NPY", "I", "ISC", "B003", "B004", "B015", "PTH", "D100", "D101", "D102", "D103", "D104", "D105", "D200", "W191", "W291", "W293", "N801", "N804", "N805", "T100", "S105", "S106", "S108", "S604", "S602", "S609", "UP003", "UP005", "UP006", "UP007", "UP008", "UP032", "UP035", "RUF001", "RUF200", "RUF013", "C901", "COM818", "RSE102", "EM101",]
@@ -38,16 +34,7 @@ convention = "numpy"
 "__init__.py" = [ "F401", "D104", "E402",]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.2"
-ruff = "^0.1.1"
 hypothesis = "^6.72.0"
 mypy = "^1.2.0"
-matplotlib = "^3.7.1"
-pandas = "^2.1.1"
-scipy = "^1.9.3"
-pint = "^0.22"
-opencv-python = "^4.9.0.80"
-
-[tool.poetry.group.dev.dependencies.debug-mode]
-path = "../debug-mode"
-develop = true
+pytest = "^7.4.2"
+ruff = "^0.1.1"
