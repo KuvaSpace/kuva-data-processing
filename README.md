@@ -143,7 +143,7 @@ To publish to PyPi, follow the steps:
 
 # Contributing
 
-To be added
+Please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 # Contact information
 
