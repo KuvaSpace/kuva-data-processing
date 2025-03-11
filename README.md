@@ -156,6 +156,6 @@ To be added
 
 # Status of unit tests
 
-[![Unit tests for kuva-geometry](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml/badge.svg)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml)
-[![Unit tests for kuva-metadata](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml/badge.svg)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml)
-[![Unit tests for kuva-reader](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml/badge.svg)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml)
+[![Unit tests for kuva-geometry](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml?branch=main)
+[![Unit tests for kuva-metadata](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml?branch=main)
+[![Unit tests for kuva-reader](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml?branch=main)
