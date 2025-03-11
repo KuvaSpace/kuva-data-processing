@@ -79,7 +79,10 @@ poetry run pytest
 
 # Contributing
 
-To be added
+Please follow the guidelines in [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+Also, please follow our [Code of Conduct](../CODE_OF_CONDUCT.md) while discussing in the 
+issues and pull requests.
 
 # Contact information
 
@@ -88,7 +91,7 @@ feel free to send them an email explaining your issue.
 
 # License
 
-To be added
+The `kuva-metadata` project software is under the [MIT license](../LICENSE.md).
 
 # Status of unit tests
 
