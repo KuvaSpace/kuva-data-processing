@@ -91,7 +91,7 @@ feel free to send them an email explaining your issue.
 
 # License
 
-To be added
+The `kuva-reader` project software is under the [MIT license](../LICENSE.md).
 
 # Status of unit tests
 
