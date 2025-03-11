@@ -144,6 +144,29 @@ To publish to PyPi, follow the steps:
 6. One last check of the generated files and current directory
 7. `poetry publish`
 
+# Code documentation
+
+To generate, serve and/or develop the code documentation you will need to activate a
+virtual environment with `mkdocs` and in its associated plugins installed. You
+can accomplish this by running the following on a fresh environment:
+
+```bash
+pip install mkdocs\
+            mkdocs-material\
+            "mkdocstrings[python]"\
+            black
+```
+
+To serve the documentation locally, run the command
+
+```bash
+mkdocs serve
+```
+
+Now, connect to the given address (by default: [http://127.0.0.1:8000](http://127.0.0.1:8000)), 
+and you can navigate through all the classes and functionalities available in the subprojects 
+in the repository.
+
 
 # Contributing
 

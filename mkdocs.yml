@@ -1,0 +1,75 @@
+site_name: Spacelab Pipeline
+repo_url: https://github.com/KuvaSpace/kuva-data-processing
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: false
+            ignore_init_summary: false
+            merge_init_into_class: true
+            separate_signature: true
+            show_signature_annotations: true
+            show_symbol_type_heading: true
+            line_length: 90
+            show_root_heading: true
+            show_root_full_path: false
+
+nav:
+  - Home:
+    - index.md
+  - Modules:
+    - api/index.md
+    - kuva-metadata:
+      - kuva-metadata: api/kuva-metadata/index.md
+      - API: api/kuva-metadata/api.md
+      - Validation: api/kuva-metadata/validators.md
+    - kuva-reader:
+      - Kuva Reader: api/kuva-reader/index.md
+      - API: api/kuva-reader/api.md
+    - kuva-geometry:
+      - Kuva Geometry: api/kuva-geometry/index.md
+      - API: api/kuva-geometry/api.md
+
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - admonition
+theme:
+  icon:
+    repo: fontawesome/brands/github
+  name: material
+  features:
+    - navigation.indexes
+    - content.code.copy
+    - navigation.tabs
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default 
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+extra_css:
+  - stylesheets/extra.css
