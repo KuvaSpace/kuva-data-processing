@@ -17,13 +17,19 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 python = ">=3.10,<3.11"
 numpy-quaternion = "^2022.4.4"
 numpy = "^1.26.4"
+networkx = "^3.4.2"
 pint = "^0.22"
 pydantic = "^2.9.2"
+python-dateutil = "^2.9.0.post0"
 pytz = "^2023.4"
 rasterio = "^1.4.1"
 rich = "^13.9.3"
 shapely = "^2.0.6"
 sympy = "^1.13.3"
+
+[tool.poetry.dependencies.kuva-geometry]
+path = "../kuva-geometry"
+develop = true
 
 [tool.ruff.lint]
 select = [ "E", "F", "A", "DTZ", "NPY", "I", "ISC", "B003", "B004", "B015", "PTH", "D100", "D101", "D102", "D103", "D104", "D105", "D200", "W191", "W291", "W293", "N801", "N804", "N805", "T100", "S105", "S106", "S108", "S604", "S602", "S609", "UP003", "UP005", "UP006", "UP007", "UP008", "UP032", "UP035", "RUF001", "RUF200", "RUF013", "C901", "COM818", "RSE102", "EM101",]

@@ -89,3 +89,7 @@ feel free to send them an email explaining your issue.
 # License
 
 To be added
+
+# Status of unit tests
+
+[![Unit tests for kuva-metadata](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml/badge.svg)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml)
