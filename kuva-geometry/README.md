@@ -58,7 +58,10 @@ poetry run pytest
 
 # Contributing
 
-To be added
+Please follow the guidelines in [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+Also, please follow our [Code of Conduct](../CODE_OF_CONDUCT.md) while discussing in the 
+issues and pull requests.
 
 # Contact information
 

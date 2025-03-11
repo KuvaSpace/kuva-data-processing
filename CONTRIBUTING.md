@@ -14,11 +14,16 @@ would greatly improve the lives of users of this project, please always drop an 
 first. Issues are gone through periodically to be discussed and to be fixed in order of 
 urgency.
 
+### Issue contents
+
+Please include the following things in your issues
+
 ## Encountering a bug
 
 If you encounter a bug, please leave an issue. If you already have a clear solution in mind, 
-you can pair it up with a pull request and link it to the issue. If it requires any larger 
-changes in functionality, it is better to first discuss within the issue on possible solutions.
+you can pair it up with a pull request (from a `bugfix` branch to `develop`) and link it 
+to the issue. If it requires any larger changes in functionality, it is better to first 
+discuss within the issue on possible solutions.
 
 ## Adding new functionalities
 
@@ -34,3 +39,19 @@ to implement this new feature.
 Our code quality follows closely the Python's PEP8 standard. The `pyproject.toml` files 
 enforce the most important ones through the Ruff tool. These can be integrated into some 
 IDEs to automatically format or leave notes on code when not complying.
+
+## Coding workflow and branches
+
+The Kuva Data Processing branches have the following naming and hierarchy order.
+
+```
+main < develop < bugfix/my-bugfix
+               < feature/my-feature
+```
+
+When developing in the project, the default is creating a new branch from develop and 
+doing your fix there.
+
+In critical issues, some hotfixes may be pushed to `main` and `develop` separately. Still, 
+the initial PR should be done on the `develop` branch and it will be cherry-picked to `main` 
+if necessary.
