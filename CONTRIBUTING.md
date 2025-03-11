@@ -5,6 +5,8 @@ Thank you for considering to contribute to Kuva Data Processing!
 Note that contributions 
 fall into the [MIT license](LICENSE.md) with the rest of the codebase.
 
+Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) when discussing in issues and pull requests of the project.
+
 ## First things first: adding an issue
 
 Whether you encounter a bug, something is unclear, or you believe a new functionality 

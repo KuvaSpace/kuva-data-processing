@@ -145,6 +145,9 @@ To publish to PyPi, follow the steps:
 
 Please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
 
+Also, please follow our [Code of Conduct](CODE_OF_CONDUCT.md) while discussing in the 
+issues and pull requests.
+
 # Contact information
 
 For questions or support, please open an issue. If you have been given a support contact, 
