@@ -4,7 +4,6 @@ from typing import cast
 
 import pytest
 import quaternion
-from kuva_reader.reader.level0 import Level0Product
 from pint import UnitRegistry
 from rasterio.crs import CRS
 from shapely import Point, from_wkt
@@ -23,11 +22,6 @@ def ureg() -> UnitRegistry:
 @pytest.fixture
 def test_data_path() -> Path:
     return Path(__file__).parent / "test_data"
-
-
-@pytest.fixture
-def l0_product(test_data_path) -> Level0Product:
-    return Level0Product(test_data_path / "l0_example")
 
 
 @pytest.fixture

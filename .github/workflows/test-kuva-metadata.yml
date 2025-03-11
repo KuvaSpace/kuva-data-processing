@@ -1,0 +1,45 @@
+name: Unit tests for Kuva Metadata
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    #   - develop  # Temporarily disabled until first release
+    paths:
+      - 'kuva-metadata/**'
+  push:
+    branches:
+      - main
+    #   - develop  # Temporarily disabled until first release
+    paths:
+      - 'kuva-metadata/**'
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10.x
+
+      - name: Install Poetry
+        run: |
+          pip install "poetry<2"
+          poetry --version
+
+      - name: Install project dependencies
+        working-directory: ./kuva-metadata
+        run: poetry install --no-root
+
+      - name: Install package
+        working-directory: ./kuva-metadata
+        run: poetry install --no-interaction
+
+      - name: Run tests
+        working-directory: ./kuva-metadata
+        run: poetry run pytest
