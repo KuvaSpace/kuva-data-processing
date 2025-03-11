@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/7d1db448-69e0-416d-9ccb-d8d2c4324a3f" alt="kuva_space_logo" width="50%"/>
+</div>
+
 # Reader for Kuva Space images
 
 The reader project allows the reading of Kuva Space products from any part of its processing chain.
