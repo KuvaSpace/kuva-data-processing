@@ -144,6 +144,39 @@ To publish to PyPi, follow the steps:
 6. One last check of the generated files and current directory
 7. `poetry publish`
 
+# Tests
+
+Unit tests are done with Pytest for each subproject separately. Most of them can be run 
+as is, but `kuva-reader` has tests with real Hyperfield-1 data, and fetching the data 
+requires [Git LFS](https://git-lfs.com/).
+
+To fetch the test data yourself, you need to install Git LFS and pull the data:
+
+```sh
+# Only once per system
+sudo apt-get install git-lfs
+git lfs install
+```
+
+Then, you can simply download the test data with:
+
+```sh
+# Download all data
+git lfs pull
+```
+
+Now, to run all of the tests succesfully, run pytest through poetry:
+
+```sh
+poetry run pytest
+```
+
+## Status of unit tests
+
+[![Unit tests for kuva-geometry](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml?branch=main)
+[![Unit tests for kuva-metadata](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml?branch=main)
+[![Unit tests for kuva-reader](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml?branch=main)
+
 # Code documentation
 
 To generate, serve and/or develop the code documentation you will need to activate a
@@ -184,8 +217,3 @@ feel free to send them an email explaining your issue.
 
 The `kuva-data-processing` repository software is under the [MIT license](LICENSE.md).
 
-# Status of unit tests
-
-[![Unit tests for kuva-geometry](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-geometry.yml?branch=main)
-[![Unit tests for kuva-metadata](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-metadata.yml?branch=main)
-[![Unit tests for kuva-reader](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml/badge.svg?branch=main)](https://github.com/KuvaSpace/kuva-data-processing/actions/workflows/test-kuva-reader.yml?branch=main)
