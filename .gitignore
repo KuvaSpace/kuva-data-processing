@@ -129,3 +129,6 @@ _debug/
 *.tiff
 *.npy
 hyperfield*.json
+
+# Do not ignore Kuva files in the test_data directory
+!kuva-reader/tests/test_data/**
