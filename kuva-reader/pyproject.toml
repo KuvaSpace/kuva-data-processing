@@ -21,7 +21,7 @@ make-l0-meta = "kuva_reader.reader.level0:generate_level_0_metafile"
 make-l1-meta = "kuva_reader.reader.level1:generate_level_1_metafile"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.10,<=3.13"
 numpy = "^1.26.4"
 numpy-quaternion = "^2022.4.4"
 dask = "^2023.12.1"

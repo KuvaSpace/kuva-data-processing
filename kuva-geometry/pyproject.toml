@@ -14,7 +14,7 @@ line-length = 88
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.10,<=3.13"
 numpy-quaternion = "^2022.4.4"
 numpy = "^1.26.4"
 pint = "^0.22"
