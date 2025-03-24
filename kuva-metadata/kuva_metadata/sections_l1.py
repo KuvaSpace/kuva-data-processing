@@ -67,6 +67,8 @@ class Image(BaseModelWithUnits):
         Solar zenith angle of the image area
     local_solar_azimuth_angle
         Solar azimuth angle of the image area
+    local_viewing_angle
+        The angle between the satellite's pointing direction and nadir.
     acquired_on
         Time of image acquisition
     source_images
@@ -80,20 +82,27 @@ class Image(BaseModelWithUnits):
     bands: list[Band]
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
+    local_viewing_angle: Quantity
     acquired_on: datetime
     source_images: list[UUID4]
     measured_quantity_name: str
     measured_quantity_unit: str
 
     _check_angle = field_validator(
-        "local_solar_zenith_angle", "local_solar_azimuth_angle", mode="before"
+        "local_solar_zenith_angle",
+        "local_solar_azimuth_angle",
+        "local_viewing_angle",
+        mode="before",
     )(must_be_angle)
     _parse_timestamp = field_validator("acquired_on", mode="before")(parse_timestamp)
     _check_tz = field_validator("acquired_on")(check_is_utc_datetime)
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
     @field_serializer(
-        "local_solar_zenith_angle", "local_solar_azimuth_angle", when_used="json"
+        "local_solar_zenith_angle",
+        "local_solar_azimuth_angle",
+        "local_viewing_angle",
+        when_used="json",
     )
     def _serialize_quantity(self, q: Quantity):
         return serialize_quantity(q)
