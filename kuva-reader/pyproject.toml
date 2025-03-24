@@ -6,7 +6,8 @@ build-backend = "poetry.core.masonry.api"
 name = "kuva-reader"
 version = "0.1.0"
 description = "Manipulate the Kuva Space image and metadata formats"
-authors = [ "Guillem Ballesteros <guillem@kuvaspace.com>",]
+authors = ["Guillem Ballesteros <guillem@kuvaspace.com>" , "Lennert Antson <lennert.antson@kuvaspace.com>", "Arthur Vandenhoeke <arthur.vandenhoeke@kuvaspace.com>", "Olli Eloranta <olli.eloranta@kuvaspace.com>"]
+license = "MIT"
 
 [tool.ruff]
 target-version = "py310"
@@ -30,22 +31,22 @@ psycopg = "^3.2.3"
 rasterio = "^1.4.1"
 xarray = "^2022.12.0"
 rioxarray = "^0.12.4"
+kuva-geometry = "*"
+kuva-metadata = "*"
 
-[tool.poetry.dependencies.kuva-metadata]
-path = "../kuva-metadata"
-develop = true
+# Temporarily can replace pypi version with relative dep if doing local development
+# [tool.poetry.dependencies.kuva-geometry]
+# path = "../kuva-geometry"
+# develop = true
 
-[tool.poetry.dependencies.kuva-geometry]
-path = "../kuva-geometry"
-develop = true
+# [tool.poetry.dependencies.kuva-metadata]
+# path = "../kuva-metadata"
+# develop = true
+
 
 [tool.ruff.lint]
 select = [ "E", "F", "A", "DTZ", "NPY", "I", "ISC", "B003", "B004", "B015", "PTH", "D100", "D101", "D102", "D103", "D104", "D105", "D200", "W191", "W291", "W293", "N801", "N804", "N805", "T100", "S105", "S106", "S108", "S604", "S602", "S609", "UP003", "UP005", "UP006", "UP007", "UP008", "UP032", "UP035", "RUF001", "RUF200", "RUF013", "C901", "COM818", "RSE102", "EM101",]
 exclude = [ ".direnv", ".eggs", ".git", ".mypy_cache", ".nox", ".pytype", ".ruff_cache", ".tox", ".venv", "__pypackages__", "_build", "build", "dist", "venv", "__pycache__",]
-
-[tool.poetry.dependencies.tomlkit]
-git = "https://github.com/sdispater/tomlkit"
-branch = "master"
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
@@ -57,7 +58,6 @@ convention = "numpy"
 "__init__.py" = [ "F401", "D104", "E402",]
 
 [tool.poetry.group.dev.dependencies]
-hypothesis = "^6.72.0"
 mypy = "^1.2.0"
 pytest = "^7.4.2"
 ruff = "^0.1.1"
