@@ -4,9 +4,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kuva-geometry"
-version = "0.1.0"
+version = "0.1.2"
 description = "Definitions and helper functionalities for Kuva Space geometric operations"
-authors = [ "Guillem Ballesteros <guillem@kuvaspace.com>",]
+authors = [ "Guillem Ballesteros <guillem@kuvaspace.com>" , "Lennert Antson <lennert.antson@kuvaspace.com>", "Arthur Vandenhoeke <arthur.vandenhoeke@kuvaspace.com>", "Olli Eloranta <olli.eloranta@kuvaspace.com>" ]
+license = "MIT"
 
 [tool.ruff]
 target-version = "py310"
@@ -31,10 +32,9 @@ max-complexity = 10
 convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = [ "F401", "D104", "E402",]
+"__init__.py" = [ "F401", "D104", "E402" ]
 
 [tool.poetry.group.dev.dependencies]
-hypothesis = "^6.72.0"
 mypy = "^1.2.0"
 pytest = "^7.4.2"
 ruff = "^0.1.1"
