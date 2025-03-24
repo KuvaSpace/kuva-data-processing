@@ -6,7 +6,8 @@ build-backend = "poetry.core.masonry.api"
 name = "kuva-metadata"
 version = "0.1.0"
 description = "Definitions of Kuva Space product metadata"
-authors = [ "Guillem Ballesteros <guillem@kuvaspace.com>",]
+authors = ["Guillem Ballesteros <guillem@kuvaspace.com>" , "Lennert Antson <lennert.antson@kuvaspace.com>", "Arthur Vandenhoeke <arthur.vandenhoeke@kuvaspace.com>", "Olli Eloranta <olli.eloranta@kuvaspace.com>"]
+license = "MIT"
 
 [tool.ruff]
 target-version = "py310"
@@ -26,10 +27,12 @@ rasterio = "^1.4.1"
 rich = "^13.9.3"
 shapely = "^2.0.6"
 sympy = "^1.13.3"
+kuva-geometry = "*"
 
-[tool.poetry.dependencies.kuva-geometry]
-path = "../kuva-geometry"
-develop = true
+# Temporarily can replace pypi version with relative dep if doing local development
+# [tool.poetry.dependencies.kuva-geometry]
+# path = "../kuva-geometry"
+# develop = true
 
 [tool.ruff.lint]
 select = [ "E", "F", "A", "DTZ", "NPY", "I", "ISC", "B003", "B004", "B015", "PTH", "D100", "D101", "D102", "D103", "D104", "D105", "D200", "W191", "W291", "W293", "N801", "N804", "N805", "T100", "S105", "S106", "S108", "S604", "S602", "S609", "UP003", "UP005", "UP006", "UP007", "UP008", "UP032", "UP035", "RUF001", "RUF200", "RUF013", "C901", "COM818", "RSE102", "EM101",]
@@ -45,7 +48,6 @@ convention = "numpy"
 "__init__.py" = [ "F401", "D104", "E402",]
 
 [tool.poetry.group.dev.dependencies]
-hypothesis = "^6.72.0"
 mypy = "^1.2.0"
 pytest = "^7.4.2"
 ruff = "^0.1.1"

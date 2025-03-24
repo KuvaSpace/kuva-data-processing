@@ -531,6 +531,8 @@ class Image(BaseModelWithUnits):
         The angle between the local (to the observation point) zenith and the sun.
     local_solar_azimuth_angle
         The azimuth angle between the local observation point and the sun.
+    local_viewing_angle
+        The angle between the satellite's pointing direction and nadir.
     acquisition_mode
         Acquisition mode of the satellite.
     footprint
@@ -554,6 +556,7 @@ class Image(BaseModelWithUnits):
     intra_sequence_id: Annotated[int, Field(ge=0, strict=True)]
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
+    local_viewing_angle: Quantity
     acquisition_mode: str
     footprint: CRSGeometry
     data_cubes: dict[str, DataCube]
@@ -562,7 +565,10 @@ class Image(BaseModelWithUnits):
     measured_quantity_unit: str
 
     _check_angle = field_validator(
-        "local_solar_zenith_angle", "local_solar_azimuth_angle", mode="before"
+        "local_solar_zenith_angle",
+        "local_solar_azimuth_angle",
+        "local_viewing_angle",
+        mode="before",
     )(must_be_angle)
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
@@ -628,7 +634,10 @@ class Image(BaseModelWithUnits):
             raise ValueError(msg)
 
     @field_serializer(
-        "local_solar_zenith_angle", "local_solar_azimuth_angle", when_used="json"
+        "local_solar_zenith_angle",
+        "local_solar_azimuth_angle",
+        "local_viewing_angle",
+        when_used="json",
     )
     def _serialize_quantity(self, q: Quantity):
         return serialize_quantity(q)
