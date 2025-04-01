@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import cast
 
+import xarray
 import rioxarray as rx
 from kuva_metadata import MetadataLevel1AB, MetadataLevel1C
 from pint import UnitRegistry
@@ -85,6 +86,25 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
                 )
 
         return metadata
+
+    def get_bad_pixel_mask(
+        self, camera: str | None = None, per_band: bool = False
+    ) -> xarray.Dataset:
+        """Get the bad pixel mask associated to each camera of the L0 product
+        Returns
+        -------
+            The bad pixel masks of the cameras
+        """
+        if camera is not None:
+            e_ = "Parameter `camera` is not supported in this product level."
+            raise ValueError(e_)
+
+        if per_band:
+            bad_pixel_filename = self.image_path / "bad_pixel_mask_per_band.tif"
+        else:
+            bad_pixel_filename = self.image_path / "bad_pixel_mask_aggregated.tif"
+
+        return self._read_array(self.image_path / bad_pixel_filename)
 
 
 class Level1CProduct(ProductBase[MetadataLevel1C]):

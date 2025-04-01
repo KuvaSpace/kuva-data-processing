@@ -205,7 +205,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
         if camera is None:
             e_ = "The `camera` argument must be given for L0 product bad pixel masks."
             raise ValueError(e_)
-        bad_pixel_filename = f"{camera}_per_frame_cloud_mask.tif"
+        bad_pixel_filename = f"{camera}_per_frame_bad_pixel_mask.tif"
         return self._read_array(self.image_path / bad_pixel_filename)
 
     def get_cloud_mask(self, camera: str | None = None) -> xarray.Dataset:
