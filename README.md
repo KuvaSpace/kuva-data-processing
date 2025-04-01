@@ -58,6 +58,8 @@ pip install kuva-reader
 
 The installation is recommended to be done in a Python virtual environment. If you do not have one, follow the instructions below to install it.
 
+If you are interested in contributing to the codebase, source installation information is given in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Installing a virtual environment
 
 To make installation smooth and sure to work, we recommend installing a virtual 
@@ -90,7 +92,6 @@ pyenv activate kuva-env
 ```
 
 
-
 # Code
 ### Kuva reader - Minimal example
 
@@ -110,7 +111,7 @@ product = Level1ABProduct(product_path)
 print(product.image.shape)
 ```
 
-# Contributing
+# Contributing and development
 
 Please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
 
