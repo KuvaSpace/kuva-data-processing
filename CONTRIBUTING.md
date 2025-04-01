@@ -179,13 +179,15 @@ in the repository.
 
 ## *For Kuva developers: publishing the newest version in PyPi*
 
-To publish to PyPi, follow the steps:
+To publish to PyPi, first verify the code to be published by following the steps:
 
 1. Configure PyPi credentials for Poetry if not already done
 2. Verify that you are in the correct branch (*develop* or *main*)
 3. `cd` into the sub-package to update
 4. Review/verify code integrity and run tests
 5. Update package version in the `pyproject.toml` file
-6. `poetry build`
-7. One last check of the generated files and current directory
+
+Then, procees with the publishing
+6. Remove the `dist` folder from any previous builds
+7. `poetry build`
 8. `poetry publish`
