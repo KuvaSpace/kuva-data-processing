@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/7d1db448-69e0-416d-9ccb-d8d2c4324a3f" alt="kuva_space_logo" width="50%"/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/images/logo_kuva_space_white.png">
+    <img alt="kuva-space-logo" src="./docs/images/logo_kuva_space_black.png" width="50%">
+  </picture>
 </div>
 
 # Kuva Data Processing
