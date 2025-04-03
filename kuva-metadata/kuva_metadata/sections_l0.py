@@ -520,10 +520,6 @@ class Image(BaseModelWithUnits):
         Timestamp of the last frame of the last camera trigger
     s3_path
         Path on the storage to the folder/zip containing the data
-    sequence_id:
-        Index of the acquisition run. An acquisition run is a time interval during
-        which the cameras are taking images continuously with a small as possible
-        dead time between them.
     intra_sequence_id
         A counter indicating what position within the run of images the metadata file
         is associated with.
@@ -552,7 +548,6 @@ class Image(BaseModelWithUnits):
     start_acquisition_date: datetime
     end_acquisition_date: datetime
     s3_path: Path
-    sequence_id: Annotated[int, Field(ge=0, strict=True)]
     intra_sequence_id: Annotated[int, Field(ge=0, strict=True)]
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
