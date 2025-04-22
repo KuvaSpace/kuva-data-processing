@@ -60,37 +60,7 @@ The installation is recommended to be done in a Python virtual environment. If y
 
 If you are interested in contributing to the codebase, source installation information is given in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Installing a virtual environment
-
-To make installation smooth and sure to work, we recommend installing a virtual 
-environment with a specific Python version, along with the Poetry program for handling Python package installing.
-
-One example of a virtual environment manager is pyenv, which can be installed with
-
-```bash
-# Update local packages
-sudo apt update -y
-# Install Pyenv
-curl https://pyenv.run | bash
-
-# Then configure your bash script to recognize pyenv
-echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-source ~/.bashrc
-```
-
 We recommend using Python version 3.12 for `kuva-datareader`, but it is tested in versions 3.10 - 3.13.
-
-```bash
-# Install the Python version
-pyenv install 3.12
-# Create a virtual environment with the given Python version
-pyenv virtualenv 3.12 kuva-env
-# Activate the virtual environment
-pyenv activate kuva-env
-```
-
 
 # Code
 ### Kuva reader - Minimal example
