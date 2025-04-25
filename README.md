@@ -66,16 +66,24 @@ The result product is in this case an L1C product (as seen from the folder name)
 The loaded product is stored in a `rioxarray` object, which contains extensive GIS functionalities [(examples for usage)](https://corteva.github.io/rioxarray/stable/examples/examples.html).
 
 ```python
-from pathlib import Path
+from kuva_reader import read_product
 
-from kuva_reader import Level1ABProduct
-
-DATA_ROOT = Path("data")
-product_path = DATA_ROOT / "hyperfield1a_L1B_20250105T092548/"
-
-product = Level1ABProduct(product_path)
-print(product.image.shape)
+l1c_product = read_product("my_data_folder/hyperfield1a_L2A_20250105T092548")
+print(product)  # Will show some main information such as image shape and CRS
 ```
+
+This assumes a mostly untouched folder after distributing. Otherwise, you may need to
+read the product manually. Available product levels are L0, L1AB, L1C and L2A and they
+can be read as such:
+
+```python
+from kuva_reader import Level2AProduct
+
+l2a_product = Level2AProduct("your/l2a/folder")
+```
+
+The actual raster image is stored and can be analysed in `product.image`, while metadata
+information of the product is in `product.metadata`. 
 
 # Contributing and development
 
