@@ -4,20 +4,20 @@ Observation (EO) products.  The module handles the reading and parsing of image
 data, as well as extracting and structuring the associated metadata to
 facilitate further analysis or visualization.
 
-## Key Features
+Key Features
 
-- **Open EO Products**: Load satellite images and corresponding metadata from
-  various data formats.
-- **Access Metadata**: Retrieve information such as acquisition time, satellite
+- Open EO Products: Load satellite images and corresponding metadata from
+  various dataformats.
+- Access Metadata: Retrieve information such as acquisition time, satellite
   name, sensor type, geospatial coordinates, and any custom metadata embedded
   within the product.
-- **Image Handling**: Manage the loading  of image data for efficient use in
+- Image Handling: Manage the loading  of image data for efficient use in
   analytical processes.
 
-## Dependencies
-- **kuva-metadata**: A specialized library that handles the extraction and
+Dependencies
+- kuva-metadata: A specialized library that handles the extraction and
   parsing of metadata associated with Kuva Space products.
-- **xarray**: Used for loading image data as arrays with extra functionality,
+- xarray: Used for loading image data as arrays with extra functionality,
   including labeled coordinates and metadata, which is useful for analysis and
   visualization.
 """
