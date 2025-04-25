@@ -221,6 +221,15 @@ class Level0Product(ProductBase[MetadataLevel0]):
         bad_pixel_filename = f"{camera}_per_frame_cloud_mask.tif"
         return self._read_array(self.image_path / bad_pixel_filename)
 
+    def release_memory(self,):
+        """Explicitely releases the memory of the `images` variable.
+
+        NOTE: this function is implemented because of a memory leak inside the Rioxarray
+        library that doesn't release memory properly. Only use it when the image data is
+        not needed anymore.
+        """
+        del self.images
+        self.images = None
 
 def generate_level_0_metafile():
     """Example function for reading a product and generating a metadata file from the

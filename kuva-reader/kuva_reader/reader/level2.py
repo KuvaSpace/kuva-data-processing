@@ -83,6 +83,15 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
 
         return metadata
 
+    def release_memory(self,):
+        """Explicitely releases the memory of the `image` variable.
+
+        NOTE: this function is implemented because of a memory leak inside the Rioxarray
+        library that doesn't release memory properly. Only use it when the image data is
+        not needed anymore.
+        """
+        del self.image
+        self.image = None
 
 def generate_level_2_metafile():
     """Example function for reading a product and generating a metadata file from the
