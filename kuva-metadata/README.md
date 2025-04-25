@@ -18,15 +18,25 @@ next processing levels, or do more precise processing than just with a GeoTIFF.
 
 # Table of Contents
 
+- [Installation](#installation)
 - [Processing Levels](#processing-levels)
 - [Architecture](#architecture)
-- [Installation](#installation)
-- [Tests](#tests)
 - [Contributing](#contributing)
 - [Configuration](#configuration)
 - [Contact information](#contact-information)
 - [License](#license)
 
+# Installation
+
+```bash
+pip install kuva-metadata
+``` 
+
+This package is also included when installing the `kuva-reader`.
+
+### Requirements
+
+`Python 3.10` to `3.13`, preferably within a virtual environment
 
 # Processing levels
 
@@ -43,46 +53,6 @@ All the metadata are defined as Pydantic models, this has several advantages:
 
 - A very rich set of validations that are applied before data object construction
 - The ability to easily (de)serialize (from)to JSON
-
-# Installation
-
-### Requirements
-
-- Python 3.10, preferably within a virtual environment
-
-### Installation from source
-
-Installation from source is simply done with poetry. Be sure to activate your Python 
-virtual environment and run the following command in this project's root:
-
-```sh
-# If poetry is not installed in your virtual environment:
-pip install poetry
-```
-
-```sh
-# Install the package locally
-poetry install
-```
-
-Pypi installation coming soon.
-
-# Tests
-
-Units tests aimed for the package developers are available with Pytest. Running pytest 
-requires the dev dependencies of the project. They can be installed with
-
-```sh
-# Test dependency installation
-poetry install --with dev
-```
-
-Then, tests can be run simply with pytest in the project's root folder
-
-```sh
-# Running tests
-poetry run pytest
-```
 
 # Contributing
 
