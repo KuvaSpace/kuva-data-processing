@@ -52,6 +52,19 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
             rx.open_rasterio(self.image_path / "L2A.tif"),
         )
         self.data_tags = self.image.attrs
+        self.wavelengths = [
+            b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
+        ]
+
+    def __repr__(self):
+        """Pretty printing of the object with the most important info"""
+        return (
+            f"{self.__class__.__name__}("
+            f"image.shape={self.image.shape}, "
+            f"image.crs={self.image.rio.crs}, "
+            f"wavelengths={self.wavelengths}"
+            f"image_path='{self.image_path})"
+        )
 
     def _get_data_from_sidecar(
         self, sidecar_path: Path, target_ureg: UnitRegistry | None = None

@@ -101,6 +101,17 @@ class Level0Product(ProductBase[MetadataLevel0]):
                     self.data_tags[camera]["data_offset"] = offset
                     self.data_tags[camera]["data_scale"] = scale
 
+    def __repr__(self):
+        """Pretty printing of the object with the most important info"""
+        return (
+            f"{self.__class__.__name__}("
+            f"len(self.images)={len(self.images)}, "
+            f"self.images[0].shape={self.images[0].shape}"
+            f"crs={self.images[0].rio.crs}, "
+            f"image_path='{self.image_path}"
+            ")"
+        )
+
     def __getitem__(self, camera: str) -> xarray.DataArray:
         """Return the datarray for the chosen camera."""
         return self.images[camera]
