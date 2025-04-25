@@ -16,19 +16,6 @@ The metadata lives either in a Kuva Space database, or alternatively in a sideca
 This library allows the reading of the image GeoTIFFs into `xarray.Dataset` objects that 
 allow convenient raster manipulations, along with their `kuva-metadata` metadata objects.
 
-
-# Table of Contents
-
-- [Installation](#installation)
-- [Code](#code)
-  - [Minimal example](#minimal-example)
-  - [Processing levels](#processing-levels)
-  - [Special tags](#special-tags)
-- [Contributing](#contributing)
-- [Configuration](#configuration)
-- [Contact information](#contact-information)
-- [License](#license)
-
 # Installation
 
 ```bash
@@ -88,10 +75,10 @@ be messed with.
 
 # Contributing
 
-Please follow the guidelines in [CONTRIBUTING.md](../CONTRIBUTING.md).
+Please follow the guidelines in [CONTRIBUTING.md](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
 
-Also, please follow our [Code of Conduct](../CODE_OF_CONDUCT.md) while discussing in the 
-issues and pull requests.
+Also, please follow our [Code of Conduct](https://github.com/KuvaSpace/kuva-data-processing/blob/main/CODE_OF_CONDUCT.md)
+while discussing in the issues and pull requests.
 
 # Contact information
 
@@ -100,7 +87,7 @@ feel free to send them an email explaining your issue.
 
 # License
 
-The `kuva-reader` project software is under the [MIT license](../LICENSE.md).
+The `kuva-reader` project software is under the [MIT license](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
 
 # Status of unit tests
 

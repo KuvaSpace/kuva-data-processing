@@ -15,17 +15,6 @@ various processing levels.
 With the metadata and images, we may process products to the 
 next processing levels, or do more precise processing than just with a GeoTIFF. 
 
-
-# Table of Contents
-
-- [Installation](#installation)
-- [Processing Levels](#processing-levels)
-- [Architecture](#architecture)
-- [Contributing](#contributing)
-- [Configuration](#configuration)
-- [Contact information](#contact-information)
-- [License](#license)
-
 # Installation
 
 ```bash
@@ -56,10 +45,10 @@ All the metadata are defined as Pydantic models, this has several advantages:
 
 # Contributing
 
-Please follow the guidelines in [CONTRIBUTING.md](../CONTRIBUTING.md).
+Please follow the guidelines in [CONTRIBUTING.md](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
 
-Also, please follow our [Code of Conduct](../CODE_OF_CONDUCT.md) while discussing in the 
-issues and pull requests.
+Also, please follow our [Code of Conduct](https://github.com/KuvaSpace/kuva-data-processing/blob/main/CODE_OF_CONDUCT.md)
+while discussing in the issues and pull requests.
 
 # Contact information
 
@@ -68,7 +57,8 @@ feel free to send them an email explaining your issue.
 
 # License
 
-The `kuva-metadata` project software is under the [MIT license](../LICENSE.md).
+The `kuva-reader` project software is under the [MIT license](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
+
 
 # Status of unit tests
 

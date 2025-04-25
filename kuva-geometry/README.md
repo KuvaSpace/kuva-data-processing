@@ -14,14 +14,6 @@ additional commonly used tools.
 Currently, the main use is for calculating the satellite camera rays on the Earth to get 
 footprints of the imaged area.
 
-# Table of Contents
-
-- [Installation](#installation)
-- [Contributing](#contributing)
-- [Configuration](#configuration)
-- [Contact information](#contact-information)
-- [License](#license)
-
 # Installation
 
 ```bash
@@ -36,10 +28,10 @@ This package is also included when installing the `kuva-reader`.
 
 # Contributing
 
-Please follow the guidelines in [CONTRIBUTING.md](../CONTRIBUTING.md).
+Please follow the guidelines in [CONTRIBUTING.md](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
 
-Also, please follow our [Code of Conduct](../CODE_OF_CONDUCT.md) while discussing in the 
-issues and pull requests.
+Also, please follow our [Code of Conduct](https://github.com/KuvaSpace/kuva-data-processing/blob/main/CODE_OF_CONDUCT.md)
+while discussing in the issues and pull requests.
 
 # Contact information
 
@@ -48,7 +40,7 @@ feel free to send them an email explaining your issue.
 
 # License
 
-The `kuva-geometry` project software is under the [MIT license](../LICENSE.md).
+The `kuva-reader` project software is under the [MIT license](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
 
 # Status of unit tests
 
