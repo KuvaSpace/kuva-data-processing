@@ -41,8 +41,7 @@ def parse_crs_geometry(geom: CRSGeometry | dict[str, str | int]) -> CRSGeometry:
 def parse_date(date: datetime | str) -> datetime:
     """Parses dates and makes sure they are UTC"""
     if isinstance(date, str):
-        date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
-        date = date.astimezone(ZoneInfo("Etc/UTC"))
+        date = datetime.fromisoformat(date.replace("Z", "+00:00"))
 
     return date
 

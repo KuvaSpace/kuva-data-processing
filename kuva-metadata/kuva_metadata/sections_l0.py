@@ -48,8 +48,8 @@ from .validators import (
     must_be_speed,
     must_be_temperature,
     parse_crs_geometry,
-    parse_quaternion,
     parse_date,
+    parse_quaternion,
 )
 
 
