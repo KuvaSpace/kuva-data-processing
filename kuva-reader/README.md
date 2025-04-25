@@ -1,9 +1,9 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../docs/images/logo_kuva_space_white.png">
-    <img alt="kuva-space-logo" src="../docs/images/logo_kuva_space_black.png" width="50%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/1d8b44f1-1999-4cfb-8744-32871056c253">
+    <img alt="kuva-space-logo" src="https://github.com/user-attachments/assets/d8f47cc8-1491-4d0c-a8cf-318ea7e0afdc" width="50%">
   </picture>
-</div>̈́
+</div>
 
 # Reader for Kuva Space images
 
