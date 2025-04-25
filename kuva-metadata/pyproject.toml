@@ -7,6 +7,7 @@ name = "kuva-metadata"
 version = "0.1.1"
 description = "Definitions of Kuva Space product metadata"
 authors = ["Guillem Ballesteros <guillem@kuvaspace.com>" , "Lennert Antson <lennert.antson@kuvaspace.com>", "Arthur Vandenhoeke <arthur.vandenhoeke@kuvaspace.com>", "Olli Eloranta <olli.eloranta@kuvaspace.com>"]
+readme = "README.md"
 license = "MIT"
 
 [tool.ruff]
