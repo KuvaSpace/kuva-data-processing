@@ -103,7 +103,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
-        if self.images:
+        if self.images is not None and len(self.images):
             return (
                 f"{self.__class__.__name__}"
                 f"with {len(self.images)} frames of shape {self.images[0].shape} "

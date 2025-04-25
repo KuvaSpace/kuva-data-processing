@@ -58,11 +58,11 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
-        if self.image:
+        if self.image is not None:
             return (
                 f"{self.__class__.__name__} with shape {self.image.shape} "
-                f"and wavelengths {self.wavelengths} (CRS: {self.image.rio.crs}). "
-                f"Loaded from: {self.image_path}."
+                f"and wavelengths {self.wavelengths} (CRS: '{self.image.rio.crs}'). "
+                f"Loaded from: '{self.image_path}'."
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'"
