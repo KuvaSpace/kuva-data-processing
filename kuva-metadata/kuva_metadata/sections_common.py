@@ -2,8 +2,8 @@ import typing
 from datetime import datetime
 from pathlib import Path
 from typing import cast
+from zoneinfo import ZoneInfo
 
-import pytz
 from pint import Quantity, UnitRegistry
 from pydantic import (
     UUID4,
@@ -35,7 +35,7 @@ class Header(BaseModel):
 
     version: str
     author: str
-    creation_date: datetime = datetime.now(tz=pytz.utc)
+    creation_date: datetime = datetime.now().astimezone(ZoneInfo("Etc/UTC"))
 
     _parse_timestamp = field_validator("creation_date", mode="before")(parse_date)
     _check_tz = field_validator("creation_date")(check_is_utc_datetime)
