@@ -8,9 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from kuva_reader import Level1CProduct, Level2AProduct
+from kuva_reader import Level1CProduct, Level2AProduct, read_product
 
 TEST_DATA_ROOT = Path(__file__).parent / "test_data"
+L1C_PATH = TEST_DATA_ROOT / "hyperfield1a_L1C_20250310T142413"
+L2A_PATH = TEST_DATA_ROOT / "hyperfield1a_L2A_20250310T142413"
 
 
 @pytest.fixture
@@ -19,7 +21,7 @@ def l1c_product() -> Level1CProduct:
 
     NOTE: This is a cropped version of a Hyperfield-1A L1C cube with few bands (5)
     """
-    return Level1CProduct(TEST_DATA_ROOT / "hyperfield1a_L1C_20250310T142413")
+    return Level1CProduct(L1C_PATH)
 
 
 @pytest.fixture
@@ -28,7 +30,16 @@ def l2a_product() -> Level2AProduct:
 
     NOTE: This is a cropped version of a Hyperfield-1A L2A cube with few bands (5)
     """
-    return Level2AProduct(TEST_DATA_ROOT / "hyperfield1a_L2A_20250310T142413")
+    return Level2AProduct(L2A_PATH)
+
+
+def test_product_reader():
+    """Read the correct products with product reader function"""
+    with pytest.raises(ValueError):
+        read_product(L2A_PATH.parent)
+
+    product = read_product(L2A_PATH)
+    assert product.__class__ == Level2AProduct
 
 
 def test_read_l1c(l1c_product: Level1CProduct):

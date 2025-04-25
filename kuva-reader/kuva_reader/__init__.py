@@ -32,6 +32,7 @@ from .reader.image import (
 from .reader.level0 import Level0Product
 from .reader.level1 import Level1ABProduct, Level1CProduct
 from .reader.level2 import Level2AProduct
+from .reader.read import read_product
 
 __all__ = [
     "Level0Product",
@@ -41,4 +42,5 @@ __all__ = [
     "image_to_dtype_range",
     "image_to_original_range",
     "image_to_uint16_range",
+    "read_product",
 ]
