@@ -50,7 +50,7 @@ The loaded product is stored in a `rioxarray` object, which contains extensive G
 ```python
 from kuva_reader import read_product
 
-l1c_product = read_product("my_data_folder/hyperfield1a_L2A_20250105T092548")
+l2a_product = read_product("my_data_folder/hyperfield1a_L2A_20250105T092548")
 print(product)  # Will show some main information such as image shape and CRS
 ```
 
