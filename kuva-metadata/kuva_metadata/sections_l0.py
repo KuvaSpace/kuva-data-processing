@@ -49,7 +49,7 @@ from .validators import (
     must_be_temperature,
     parse_crs_geometry,
     parse_quaternion,
-    parse_timestamp,
+    parse_date,
 )
 
 
@@ -85,7 +85,7 @@ class Weather(BaseModelWithUnits):
     wind_speed: Quantity
     wind_dir: Quantity
 
-    _parse_timestamp = field_validator("timestamp", mode="before")(parse_timestamp)
+    _parse_timestamp = field_validator("timestamp", mode="before")(parse_date)
     _check_tz = field_validator("timestamp")(check_is_utc_datetime)
     _check_temp = field_validator("temperature", mode="before")(must_be_temperature)
     _check_press = field_validator("pressure", mode="before")(must_be_pressure)
@@ -227,7 +227,7 @@ class RadiometricCalibration(BaseModel):
     lab_radcal_results: dict
     on_orbit_radcal_results: dict | None
 
-    _parse_timestamp = field_validator("start_date", mode="before")(parse_timestamp)
+    _parse_timestamp = field_validator("start_date", mode="before")(parse_date)
     _check_tz = field_validator("start_date")(check_is_utc_datetime)
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
@@ -367,7 +367,7 @@ class Frame(BaseModelWithUnits):
     )
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
-    )(parse_timestamp)
+    )(parse_date)
     _check_tz = field_validator("end_acquisition_date", "start_acquisition_date")(
         check_is_utc_datetime
     )
@@ -434,7 +434,7 @@ class Band(BaseModelWithUnits):
     )
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
-    )(parse_timestamp)
+    )(parse_date)
     _check_tz = field_validator("end_acquisition_date", "start_acquisition_date")(
         check_is_utc_datetime
     )
@@ -484,7 +484,7 @@ class DataCube(BaseModelWithUnits):
 
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
-    )(parse_timestamp)
+    )(parse_date)
     _check_tz = field_validator("end_acquisition_date", "start_acquisition_date")(
         check_is_utc_datetime
     )
@@ -567,7 +567,7 @@ class Image(BaseModelWithUnits):
     )(must_be_angle)
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
-    )(parse_timestamp)
+    )(parse_date)
     _check_tz = field_validator("end_acquisition_date", "start_acquisition_date")(
         check_is_utc_datetime
     )

@@ -20,7 +20,7 @@ from .validators import (
     check_is_utc_datetime,
     must_be_angle,
     must_be_positive_distance,
-    parse_timestamp,
+    parse_date,
 )
 
 
@@ -94,7 +94,7 @@ class Image(BaseModelWithUnits):
         "local_viewing_angle",
         mode="before",
     )(must_be_angle)
-    _parse_timestamp = field_validator("acquired_on", mode="before")(parse_timestamp)
+    _parse_timestamp = field_validator("acquired_on", mode="before")(parse_date)
     _check_tz = field_validator("acquired_on")(check_is_utc_datetime)
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
