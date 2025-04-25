@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import cast
 
-import xarray
 import rioxarray as rx
+import xarray
 from kuva_metadata import MetadataLevel1AB, MetadataLevel1C
 from pint import UnitRegistry
 from xarray import Dataset
@@ -106,7 +106,7 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
 
         return self._read_array(self.image_path / bad_pixel_filename)
 
-    def release_memory(self,):
+    def release_memory(self):
         """Explicitely releases the memory of the `image` variable.
 
         NOTE: this function is implemented because of a memory leak inside the Rioxarray
@@ -115,6 +115,7 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         """
         del self.image
         self.image = None
+
 
 class Level1CProduct(ProductBase[MetadataLevel1C]):
     """
@@ -190,7 +191,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
 
         return metadata
 
-    def release_memory(self,):
+    def release_memory(self):
         """Explicitely releases the memory of the `image` variable.
 
         NOTE: this function is implemented because of a memory leak inside the Rioxarray
@@ -199,6 +200,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
         """
         del self.image
         self.image = None
+
 
 def generate_level_1_metafile():
     """Example function for reading a product and generating a metadata file from the
