@@ -103,14 +103,15 @@ class Level0Product(ProductBase[MetadataLevel0]):
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
-        return (
-            f"{self.__class__.__name__}("
-            f"len(self.images)={len(self.images)}, "
-            f"self.images[0].shape={self.images[0].shape}"
-            f"crs={self.images[0].rio.crs}, "
-            f"image_path='{self.image_path}"
-            ")"
-        )
+        if self.images:
+            return (
+                f"{self.__class__.__name__}"
+                f"with {len(self.images)} frames of shape {self.images[0].shape} "
+                f"and CRS '{self.images[0].rio.crs}'. "
+                f"Loaded from: '{self.image_path}'."
+            )
+        else:
+            return f"{self.__class__.__name__} loaded from '{self.image_path}'."
 
     def __getitem__(self, camera: str) -> xarray.DataArray:
         """Return the datarray for the chosen camera."""
@@ -232,15 +233,6 @@ class Level0Product(ProductBase[MetadataLevel0]):
         bad_pixel_filename = f"{camera}_per_frame_cloud_mask.tif"
         return self._read_array(self.image_path / bad_pixel_filename)
 
-    def release_memory(self):
-        """Explicitely releases the memory of the `images` variable.
-
-        NOTE: this function is implemented because of a memory leak inside the Rioxarray
-        library that doesn't release memory properly. Only use it when the image data is
-        not needed anymore.
-        """
-        del self.images
-        self.images = None
 
 def generate_level_0_metafile():
     """Example function for reading a product and generating a metadata file from the

@@ -58,13 +58,14 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
-        return (
-            f"{self.__class__.__name__}("
-            f"image.shape={self.image.shape}, "
-            f"image.crs={self.image.rio.crs}, "
-            f"wavelengths={self.wavelengths}"
-            f"image_path='{self.image_path})"
-        )
+        if self.image:
+            return (
+                f"{self.__class__.__name__} with shape {self.image.shape} "
+                f"and wavelengths {self.wavelengths} (CRS: {self.image.rio.crs}). "
+                f"Loaded from: {self.image_path}."
+            )
+        else:
+            return f"{self.__class__.__name__} loaded from '{self.image_path}'"
 
     def _get_data_from_sidecar(
         self, sidecar_path: Path, target_ureg: UnitRegistry | None = None
