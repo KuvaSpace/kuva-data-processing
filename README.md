@@ -45,7 +45,7 @@ The installation is recommended to be done in a Python virtual environment. If y
 
 If you are interested in contributing to the codebase, source installation information is given in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-We recommend using Python version 3.12 for `kuva-datareader`, but it is tested in versions 3.10 - 3.13.
+The `kuva-reader`, `kuva-metadata` and `kuva-geometry` packages are supported and tested in Python versions 3.10 - 3.13.
 
 # Kuva Reader minimal example
 
