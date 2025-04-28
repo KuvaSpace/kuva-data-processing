@@ -20,7 +20,7 @@ from .validators import (
     check_is_utc_datetime,
     must_be_angle,
     must_be_positive_distance,
-    parse_timestamp,
+    parse_date,
 )
 
 
@@ -33,18 +33,10 @@ class Band(BaseModelWithUnits):
         Index within a datacube associated with the band (0-indexed).
     wavelength
         Nominal wavelength associated with the Fabry-Perot Interferometer position.
-    setpoints
-        Setpoint used by acquisition in the satellite. This may differ from requested
-        setpoints due to e.g. internal temperature.
-
-    BIG Assumption
-    --------------
-    The settings of the camera are constant over the acquisition of a complete sequence.
     """
 
     index: int
     wavelength: Quantity
-    setpoints: tuple[int, int, int]
 
     _check_wl_distance = field_validator("wavelength", mode="before")(
         must_be_positive_distance
@@ -57,7 +49,7 @@ class Band(BaseModelWithUnits):
 
 
 class Image(BaseModelWithUnits):
-    """_summary_
+    """Hyperspectral image metadata containing bands
 
     Attributes
     ----------
@@ -94,7 +86,7 @@ class Image(BaseModelWithUnits):
         "local_viewing_angle",
         mode="before",
     )(must_be_angle)
-    _parse_timestamp = field_validator("acquired_on", mode="before")(parse_timestamp)
+    _parse_timestamp = field_validator("acquired_on", mode="before")(parse_date)
     _check_tz = field_validator("acquired_on")(check_is_utc_datetime)
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 

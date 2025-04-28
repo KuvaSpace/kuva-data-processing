@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/7d1db448-69e0-416d-9ccb-d8d2c4324a3f" alt="kuva_space_logo" width="50%"/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/1d8b44f1-1999-4cfb-8744-32871056c253">
+    <img alt="kuva-space-logo" src="https://github.com/user-attachments/assets/d8f47cc8-1491-4d0c-a8cf-318ea7e0afdc" width="50%">
+  </picture>
 </div>
 
 # Kuva Metadata
@@ -12,18 +15,17 @@ various processing levels.
 With the metadata and images, we may process products to the 
 next processing levels, or do more precise processing than just with a GeoTIFF. 
 
+# Installation
 
-# Table of Contents
+```bash
+pip install kuva-metadata
+``` 
 
-- [Processing Levels](#processing-levels)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Tests](#tests)
-- [Contributing](#contributing)
-- [Configuration](#configuration)
-- [Contact information](#contact-information)
-- [License](#license)
+This package is also included when installing the `kuva-reader`.
 
+### Requirements
+
+`Python 3.10` to `3.13`, preferably within a virtual environment
 
 # Processing levels
 
@@ -41,52 +43,12 @@ All the metadata are defined as Pydantic models, this has several advantages:
 - A very rich set of validations that are applied before data object construction
 - The ability to easily (de)serialize (from)to JSON
 
-# Installation
-
-### Requirements
-
-- Python 3.10, preferably within a virtual environment
-
-### Installation from source
-
-Installation from source is simply done with poetry. Be sure to activate your Python 
-virtual environment and run the following command in this project's root:
-
-```sh
-# If poetry is not installed in your virtual environment:
-pip install poetry
-```
-
-```sh
-# Install the package locally
-poetry install
-```
-
-Pypi installation coming soon.
-
-# Tests
-
-Units tests aimed for the package developers are available with Pytest. Running pytest 
-requires the dev dependencies of the project. They can be installed with
-
-```sh
-# Test dependency installation
-poetry install --with dev
-```
-
-Then, tests can be run simply with pytest in the project's root folder
-
-```sh
-# Running tests
-poetry run pytest
-```
-
 # Contributing
 
-Please follow the guidelines in [CONTRIBUTING.md](../CONTRIBUTING.md).
+Please follow the guidelines in [CONTRIBUTING.md](https://github.com/KuvaSpace/kuva-data-processing/blob/main/CONTRIBUTING.md).
 
-Also, please follow our [Code of Conduct](../CODE_OF_CONDUCT.md) while discussing in the 
-issues and pull requests.
+Also, please follow our [Code of Conduct](https://github.com/KuvaSpace/kuva-data-processing/blob/main/CODE_OF_CONDUCT.md)
+while discussing in the issues and pull requests.
 
 # Contact information
 
@@ -95,7 +57,8 @@ feel free to send them an email explaining your issue.
 
 # License
 
-The `kuva-metadata` project software is under the [MIT license](../LICENSE.md).
+The `kuva-reader` project software is under the [MIT license](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
+
 
 # Status of unit tests
 

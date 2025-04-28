@@ -2,8 +2,8 @@ import typing
 from datetime import datetime
 from pathlib import Path
 from typing import cast
+from zoneinfo import ZoneInfo
 
-import pytz
 from pint import Quantity, UnitRegistry
 from pydantic import (
     UUID4,
@@ -15,7 +15,7 @@ from pydantic import (
 from rasterio.rpc import RPC
 
 from kuva_metadata.serializers import serialize_RPCs
-from kuva_metadata.validators import check_is_utc_datetime, parse_rpcs, parse_timestamp
+from kuva_metadata.validators import check_is_utc_datetime, parse_rpcs, parse_date
 
 _T = typing.TypeVar("_T")
 
@@ -35,9 +35,9 @@ class Header(BaseModel):
 
     version: str
     author: str
-    creation_date: datetime = datetime.now(tz=pytz.utc)
+    creation_date: datetime = datetime.now().astimezone(ZoneInfo("Etc/UTC"))
 
-    _parse_timestamp = field_validator("creation_date", mode="before")(parse_timestamp)
+    _parse_timestamp = field_validator("creation_date", mode="before")(parse_date)
     _check_tz = field_validator("creation_date")(check_is_utc_datetime)
     model_config = ConfigDict(validate_assignment=True)
 
@@ -60,7 +60,7 @@ class Satellite(BaseModel):
     cospar_id: str
     launch_date: datetime
 
-    _parse_timestamp = field_validator("launch_date", mode="before")(parse_timestamp)
+    _parse_timestamp = field_validator("launch_date", mode="before")(parse_date)
     _check_tz = field_validator("launch_date")(check_is_utc_datetime)
     model_config = ConfigDict(validate_assignment=True)
 

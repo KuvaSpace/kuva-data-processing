@@ -9,7 +9,6 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 import shapely
-from dateutil import parser as date_parser
 from pint import Quantity
 from quaternion import quaternion
 from rasterio.crs import CRS
@@ -39,15 +38,12 @@ def parse_crs_geometry(geom: CRSGeometry | dict[str, str | int]) -> CRSGeometry:
     return crs_geometry
 
 
-def parse_timestamp(timestamp: datetime | str) -> datetime:
-    """Parses timestamps and makes sure they are UTC"""
-    if isinstance(timestamp, str):
-        # Parse the string into a datetime object
-        timestamp = date_parser.parse(timestamp)
-        # Use the zoneinfo.Zoneinfo class
-        timestamp = timestamp.astimezone(ZoneInfo("Etc/UTC"))
+def parse_date(date: datetime | str) -> datetime:
+    """Parses dates and makes sure they are UTC"""
+    if isinstance(date, str):
+        date = datetime.fromisoformat(date.replace("Z", "+00:00"))
 
-    return timestamp
+    return date
 
 
 def parse_rpcs(rpcs: RPC | dict[str, float | np.ndarray]) -> RPC:
