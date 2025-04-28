@@ -28,7 +28,7 @@ This package is also included when installing the `kuva-reader`.
 
 # Contributing
 
-Please follow the guidelines in [CONTRIBUTING.md](https://github.com/KuvaSpace/kuva-data-processing/blob/main/LICENSE.md).
+Please follow the guidelines in [CONTRIBUTING.md](https://github.com/KuvaSpace/kuva-data-processing/blob/main/CONTRIBUTING.md).
 
 Also, please follow our [Code of Conduct](https://github.com/KuvaSpace/kuva-data-processing/blob/main/CODE_OF_CONDUCT.md)
 while discussing in the issues and pull requests.

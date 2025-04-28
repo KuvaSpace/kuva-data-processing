@@ -188,6 +188,7 @@ To publish to PyPi, first verify the code to be published by following the steps
 5. Update package version in the `pyproject.toml` file
 
 Then, procees with the publishing
+
 6. Remove the `dist` folder from any previous builds
 7. `poetry build`
 8. `poetry publish`
