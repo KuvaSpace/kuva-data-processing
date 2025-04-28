@@ -30,17 +30,17 @@ pint = "^0.22"
 rasterio = "^1.4.1"
 xarray = "^2022.12.0"
 rioxarray = "^0.12.4"
-kuva-geometry = "*"
-kuva-metadata = "*"
+# kuva-geometry = "*"
+# kuva-metadata = "*"
 
 # Temporarily can replace pypi version with relative dep if doing local development
-# [tool.poetry.dependencies.kuva-geometry]
-# path = "../kuva-geometry"
-# develop = true
+[tool.poetry.dependencies.kuva-geometry]
+path = "../kuva-geometry"
+develop = true
 
-# [tool.poetry.dependencies.kuva-metadata]
-# path = "../kuva-metadata"
-# develop = true
+[tool.poetry.dependencies.kuva-metadata]
+path = "../kuva-metadata"
+develop = true
 
 
 [tool.ruff.lint]
