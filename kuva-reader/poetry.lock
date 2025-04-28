@@ -47,13 +47,13 @@ tests-mypy = ["mypy (>=1.11.1)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "certifi"
-version = "2025.1.31"
+version = "2025.4.26"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "certifi-2025.1.31-py3-none-any.whl", hash = "sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe"},
-    {file = "certifi-2025.1.31.tar.gz", hash = "sha256:3d5da6925056f6f18f119200434a4780a94263f10d1c21d032a6f6b2baa20651"},
+    {file = "certifi-2025.4.26-py3-none-any.whl", hash = "sha256:30350364dfe371162649852c63336a15c70c6510c2ad5015b21c2345311805f3"},
+    {file = "certifi-2025.4.26.tar.gz", hash = "sha256:0a816057ea3cdefcef70270d2c515e4506bbc954f417fa5ade2021213bb8f0c6"},
 ]
 
 [[package]]
@@ -142,42 +142,46 @@ files = [
 
 [[package]]
 name = "kuva-geometry"
-version = "0.1.5"
+version = "1.0.0"
 description = "Definitions and helper functionalities for Kuva Space geometric operations"
 optional = false
-python-versions = "<=3.13,>=3.10"
-files = [
-    {file = "kuva_geometry-0.1.5-py3-none-any.whl", hash = "sha256:9760eaf11a0f61c69a60964df8db860e1cfaace3c0989cdf3b9399d3898bf342"},
-    {file = "kuva_geometry-0.1.5.tar.gz", hash = "sha256:3e332311e989793264d5f2cf621b70f5d85241e5a013839a24766a204d345036"},
-]
+python-versions = ">=3.10,<=3.13"
+files = []
+develop = true
 
 [package.dependencies]
-numpy = ">=1.26.4,<2.0.0"
-numpy-quaternion = ">=2022.4.4,<2023.0.0"
-pint = ">=0.22,<0.23"
-sympy = ">=1.13.3,<2.0.0"
+numpy = "^1.26.4"
+numpy-quaternion = "^2022.4.4"
+pint = "^0.22"
+sympy = "^1.13.3"
+
+[package.source]
+type = "directory"
+url = "../kuva-geometry"
 
 [[package]]
 name = "kuva-metadata"
-version = "0.1.2"
+version = "1.0.0"
 description = "Definitions of Kuva Space product metadata"
 optional = false
-python-versions = "<=3.13,>=3.10"
-files = [
-    {file = "kuva_metadata-0.1.2-py3-none-any.whl", hash = "sha256:added0f31785112c9d3d75aeb60580000cea463dcfe43a17a03dfb0d41c12588"},
-    {file = "kuva_metadata-0.1.2.tar.gz", hash = "sha256:bc46b0217b7d0e9237b8028c1df57e6140349d718a79c0a4509b2e7925ddb65b"},
-]
+python-versions = ">=3.10,<=3.13"
+files = []
+develop = true
 
 [package.dependencies]
 kuva-geometry = "*"
-networkx = ">=3.4.2,<4.0.0"
-numpy = ">=1.26.4,<2.0.0"
-numpy-quaternion = ">=2022.4.4,<2023.0.0"
-pint = ">=0.22,<0.23"
-pydantic = ">=2.9.2,<3.0.0"
-rasterio = ">=1.4.1,<2.0.0"
-shapely = ">=2.0.6,<3.0.0"
-sympy = ">=1.13.3,<2.0.0"
+networkx = "^3.4.2"
+numpy = "^1.26.4"
+numpy-quaternion = "^2022.4.4"
+pint = "^0.22"
+pydantic = "^2.9.2"
+rasterio = "^1.4.1"
+shapely = "^2.0.6"
+sympy = "^1.13.3"
+
+[package.source]
+type = "directory"
+url = "../kuva-metadata"
 
 [[package]]
 name = "mpmath"
@@ -933,13 +937,13 @@ files = [
 
 [[package]]
 name = "sympy"
-version = "1.13.3"
+version = "1.14.0"
 description = "Computer algebra system (CAS) in Python"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "sympy-1.13.3-py3-none-any.whl", hash = "sha256:54612cf55a62755ee71824ce692986f23c88ffa77207b30c1368eda4a7060f73"},
-    {file = "sympy-1.13.3.tar.gz", hash = "sha256:b27fd2c6530e0ab39e275fc9b683895367e51d5da91baa8d3d64db2565fec4d9"},
+    {file = "sympy-1.14.0-py3-none-any.whl", hash = "sha256:e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5"},
+    {file = "sympy-1.14.0.tar.gz", hash = "sha256:d3d3fe8df1e5a0b42f0e7bdf50541697dbe7d23746e894990c030e2b05e72517"},
 ]
 
 [package.dependencies]
@@ -1052,4 +1056,4 @@ viz = ["matplotlib", "nc-time-axis", "seaborn"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<=3.13"
-content-hash = "ac9fa7ce4224cd2f6d87dd1aab22d98b959080c1d8bfa6e2379d0f26e2ea353e"
+content-hash = "0a6dcbcee33ef8af74929f4934ffd20c0318a3608589f6a7b9280cef70d539c3"
