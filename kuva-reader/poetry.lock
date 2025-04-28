@@ -145,43 +145,39 @@ name = "kuva-geometry"
 version = "1.0.0"
 description = "Definitions and helper functionalities for Kuva Space geometric operations"
 optional = false
-python-versions = ">=3.10,<=3.13"
-files = []
-develop = true
+python-versions = "<=3.13,>=3.10"
+files = [
+    {file = "kuva_geometry-1.0.0-py3-none-any.whl", hash = "sha256:302382ab964f818bfb8991ae285c55c2d41dfafe591815ee74a6a2b7323e1ed9"},
+    {file = "kuva_geometry-1.0.0.tar.gz", hash = "sha256:16371e62af2c4d9733ae49748a74c030c3e21eb8446f5e9e0135f9e217a42e03"},
+]
 
 [package.dependencies]
-numpy = "^1.26.4"
-numpy-quaternion = "^2022.4.4"
-pint = "^0.22"
-sympy = "^1.13.3"
-
-[package.source]
-type = "directory"
-url = "../kuva-geometry"
+numpy = ">=1.26.4,<2.0.0"
+numpy-quaternion = ">=2022.4.4,<2023.0.0"
+pint = ">=0.22,<0.23"
+sympy = ">=1.13.3,<2.0.0"
 
 [[package]]
 name = "kuva-metadata"
-version = "1.0.0"
+version = "1.0.1"
 description = "Definitions of Kuva Space product metadata"
 optional = false
-python-versions = ">=3.10,<=3.13"
-files = []
-develop = true
+python-versions = "<=3.13,>=3.10"
+files = [
+    {file = "kuva_metadata-1.0.1-py3-none-any.whl", hash = "sha256:d65da15259fa389ec37eaade14e51f370c9944e31af518f689c7fb6c8b95f831"},
+    {file = "kuva_metadata-1.0.1.tar.gz", hash = "sha256:86ae74852a8ab9eb285c687dd9f50cfeaa8a0dd0e14707e421750aec99a8d72a"},
+]
 
 [package.dependencies]
 kuva-geometry = "*"
-networkx = "^3.4.2"
-numpy = "^1.26.4"
-numpy-quaternion = "^2022.4.4"
-pint = "^0.22"
-pydantic = "^2.9.2"
-rasterio = "^1.4.1"
-shapely = "^2.0.6"
-sympy = "^1.13.3"
-
-[package.source]
-type = "directory"
-url = "../kuva-metadata"
+networkx = ">=3.4.2,<4.0.0"
+numpy = ">=1.26.4,<2.0.0"
+numpy-quaternion = ">=2022.4.4,<2023.0.0"
+pint = ">=0.22,<0.23"
+pydantic = ">=2.9.2,<3.0.0"
+rasterio = ">=1.4.1,<2.0.0"
+shapely = ">=2.0.6,<3.0.0"
+sympy = ">=1.13.3,<2.0.0"
 
 [[package]]
 name = "mpmath"
@@ -1056,4 +1052,4 @@ viz = ["matplotlib", "nc-time-axis", "seaborn"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<=3.13"
-content-hash = "0a6dcbcee33ef8af74929f4934ffd20c0318a3608589f6a7b9280cef70d539c3"
+content-hash = "ac9fa7ce4224cd2f6d87dd1aab22d98b959080c1d8bfa6e2379d0f26e2ea353e"
