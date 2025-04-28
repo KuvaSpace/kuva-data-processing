@@ -47,17 +47,17 @@ If you are interested in contributing to the codebase, source installation infor
 
 We recommend using Python version 3.12 for `kuva-datareader`, but it is tested in versions 3.10 - 3.13.
 
-# Kuva reader Minimal example
+# Kuva Reader minimal example
 
 This is a minimal example that allows you to read and print the image shape of a L1 product. \
-The result product is in this case an L1C product (as seen from the folder name).
+The result product is in this case an L2A product (as seen from the folder name).
 The loaded product is stored in a `rioxarray` object, which contains extensive GIS functionalities [(examples for usage)](https://corteva.github.io/rioxarray/stable/examples/examples.html).
 
 ```python
 from kuva_reader import read_product
 
 l2a_product = read_product("my_data_folder/hyperfield1a_L2A_20250105T092548")
-print(product)  # Will show some main information such as image shape and CRS
+print(l2a_product)  # Will show some main information such as image shape and CRS
 ```
 
 This assumes a mostly untouched folder after distributing. Otherwise, you may need to
