@@ -49,7 +49,8 @@ The `kuva-reader`, `kuva-metadata` and `kuva-geometry` packages are supported an
 
 # Kuva Reader minimal example
 
-This is a minimal example that allows you to read and print the image shape of a L1 product. \
+This is a minimal example that allows you to read and print the image shape of a L2 product.
+
 The result product is in this case an L2A product (as seen from the folder name).
 The loaded product is stored in a `rioxarray` object, which contains extensive GIS functionalities [(examples for usage)](https://corteva.github.io/rioxarray/stable/examples/examples.html).
 
