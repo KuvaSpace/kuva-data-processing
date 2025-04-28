@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kuva-reader"
-version = "1.0.0"
+version = "1.0.1"
 description = "Manipulate the Kuva Space image and metadata formats"
 authors = ["Guillem Ballesteros <guillem@kuvaspace.com>" , "Lennert Antson <lennert.antson@kuvaspace.com>", "Arthur Vandenhoeke <arthur.vandenhoeke@kuvaspace.com>", "Olli Eloranta <olli.eloranta@kuvaspace.com>"]
 readme = "README.md"
@@ -30,17 +30,17 @@ pint = "^0.22"
 rasterio = "^1.4.1"
 xarray = "^2022.12.0"
 rioxarray = "^0.12.4"
-# kuva-geometry = "*"
-# kuva-metadata = "*"
+kuva-geometry = "*"
+kuva-metadata = "*"
 
 # Temporarily can replace pypi version with relative dep if doing local development
-[tool.poetry.dependencies.kuva-geometry]
-path = "../kuva-geometry"
-develop = true
+# [tool.poetry.dependencies.kuva-geometry]
+# path = "../kuva-geometry"
+# develop = true
 
-[tool.poetry.dependencies.kuva-metadata]
-path = "../kuva-metadata"
-develop = true
+# [tool.poetry.dependencies.kuva-metadata]
+# path = "../kuva-metadata"
+# develop = true
 
 
 [tool.ruff.lint]

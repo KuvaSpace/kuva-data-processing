@@ -145,19 +145,17 @@ name = "kuva-geometry"
 version = "1.0.0"
 description = "Definitions and helper functionalities for Kuva Space geometric operations"
 optional = false
-python-versions = ">=3.10,<=3.13"
-files = []
-develop = true
+python-versions = "<=3.13,>=3.10"
+files = [
+    {file = "kuva_geometry-1.0.0-py3-none-any.whl", hash = "sha256:302382ab964f818bfb8991ae285c55c2d41dfafe591815ee74a6a2b7323e1ed9"},
+    {file = "kuva_geometry-1.0.0.tar.gz", hash = "sha256:16371e62af2c4d9733ae49748a74c030c3e21eb8446f5e9e0135f9e217a42e03"},
+]
 
 [package.dependencies]
-numpy = "^1.26.4"
-numpy-quaternion = "^2022.4.4"
-pint = "^0.22"
-sympy = "^1.13.3"
-
-[package.source]
-type = "directory"
-url = "../kuva-geometry"
+numpy = ">=1.26.4,<2.0.0"
+numpy-quaternion = ">=2022.4.4,<2023.0.0"
+pint = ">=0.22,<0.23"
+sympy = ">=1.13.3,<2.0.0"
 
 [[package]]
 name = "mpmath"
@@ -806,4 +804,4 @@ typing-extensions = ">=4.12.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<=3.13"
-content-hash = "515e579ec93680f16006d294ca99c68af518d1a9de64137ef2b69238c8affe11"
+content-hash = "38fef5b2e49a6b36380202ea0628b90177b313d4675ddb269b2f6d2c4e77f3de"
