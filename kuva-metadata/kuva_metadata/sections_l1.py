@@ -69,6 +69,8 @@ class Image(BaseModelWithUnits):
         Name of pixel value unit
     measured_quantity_unit
         Unit of pixel values
+    cloud_cover_percentage
+        The cloud cover percentage
     """
 
     bands: list[Band]
@@ -79,6 +81,7 @@ class Image(BaseModelWithUnits):
     source_images: list[UUID4]
     measured_quantity_name: str
     measured_quantity_unit: str
+    cloud_cover_percentage: float | None
 
     _check_angle = field_validator(
         "local_solar_zenith_angle",
