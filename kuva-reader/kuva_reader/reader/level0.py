@@ -6,8 +6,9 @@ import rioxarray as rx
 import xarray
 from kuva_metadata import MetadataLevel0
 from pint import UnitRegistry
+from shapely import Polygon
 
-from kuva_reader import image_to_dtype_range, image_to_original_range
+from kuva_reader import image_to_dtype_range, image_to_original_range, image_footprint
 
 from .product_base import ProductBase
 
@@ -120,6 +121,10 @@ class Level0Product(ProductBase[MetadataLevel0]):
     def keys(self) -> list[str]:
         """Easy access to the camera keys."""
         return list(self.images.keys())
+    
+    def footprint(self, crs="") -> Polygon:
+        """The product footprint as a Shapely polygon."""
+        return image_footprint(self.images["vis"], crs)
 
     def _get_data_from_sidecar(
         self, sidecar_path: Path, target_ureg: UnitRegistry | None = None

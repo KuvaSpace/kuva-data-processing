@@ -4,10 +4,37 @@ from typing import cast, overload
 
 import numpy as np
 import xarray
+from shapely.geometry import box
+from pyproj import Transformer
+from shapely import Polygon
 
 # Helper type for image processing purposes. The same operations work both for EO
 # DataArrays and Numpy arrays.
 ImageArray_ = np.ndarray | xarray.DataArray
+
+def image_footprint(image: xarray.DataArray, crs: str = "") -> Polygon:
+    """Return a product footprint as a shapely polygon
+
+    Parameters
+    ----------
+    image
+        The product image
+    crs, optional
+        CRS to convert to, by default "", keeping the image's CRS
+
+    Returns
+    -------
+        A shapely polygon footprint
+    """
+    if crs:
+        transformer = Transformer.from_crs(image.rio.crs, crs, always_xy=True)
+        bounds = image.rio.bounds()
+        minx, miny = transformer.transform(bounds[0], bounds[1])
+        maxx, maxy = transformer.transform(bounds[2], bounds[3])
+        footprint = box(minx, miny, maxx, maxy)
+    else:
+        footprint = box(*image.rio.bounds())
+    return footprint
 
 
 @overload

@@ -3,8 +3,10 @@ from typing import cast
 
 import rioxarray as rx
 import xarray
+from kuva_reader import image_footprint
 from kuva_metadata import MetadataLevel1AB, MetadataLevel1C
 from pint import UnitRegistry
+from shapely import Polygon
 from xarray import Dataset
 
 from .product_base import ProductBase
@@ -60,7 +62,6 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
 
-
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
         if self.image is not None:
@@ -71,6 +72,10 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'"
+
+    def footprint(self, crs="") -> Polygon:
+        """The product footprint as a Shapely polygon."""
+        return image_footprint(self.image, crs)
 
     def _get_data_from_sidecar(
         self, sidecar_path: Path, target_ureg: UnitRegistry | None = None
@@ -189,6 +194,10 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'"
+
+    def footprint(self, crs="") -> Polygon:
+        """The product footprint as a Shapely polygon."""
+        return image_footprint(self.image, crs)
 
     def _get_data_from_sidecar(
         self, sidecar_path: Path, target_ureg: UnitRegistry | None = None
