@@ -6,8 +6,9 @@ import rioxarray as rx
 import xarray
 from kuva_metadata import MetadataLevel0
 from pint import UnitRegistry
+from shapely import Polygon
 
-from kuva_reader import image_to_dtype_range, image_to_original_range
+from kuva_reader import image_to_dtype_range, image_to_original_range, image_footprint
 
 from .product_base import ProductBase
 
@@ -80,6 +81,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
             )
             for camera, cube in self.metadata.image.data_cubes.items()  # type: ignore
         }
+        self.crs = self.images[list(self.images.keys())[0]].rio.crs
 
         # Read tags for images and denormalize / renormalize if needed
         self.data_tags = {camera: img.attrs for camera, img in self.images.items()}
@@ -106,9 +108,9 @@ class Level0Product(ProductBase[MetadataLevel0]):
         if self.images is not None and len(self.images):
             return (
                 f"{self.__class__.__name__}"
-                f"with {len(self.images)} frames of shape {self.images[0].shape} "
-                f"and CRS '{self.images[0].rio.crs}'. "
-                f"Loaded from: '{self.image_path}'."
+                f"with VIS shape {self.images['vis'].shape} "
+                f"and NIR shape {self.images['nir'].shape} "
+                f"(CRS '{self.crs}'). Loaded from: '{self.image_path}'."
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'."
@@ -120,6 +122,10 @@ class Level0Product(ProductBase[MetadataLevel0]):
     def keys(self) -> list[str]:
         """Easy access to the camera keys."""
         return list(self.images.keys())
+
+    def footprint(self, crs="") -> Polygon:
+        """The product footprint as a Shapely polygon."""
+        return image_footprint(self.images["vis"], crs)
 
     def _get_data_from_sidecar(
         self, sidecar_path: Path, target_ureg: UnitRegistry | None = None

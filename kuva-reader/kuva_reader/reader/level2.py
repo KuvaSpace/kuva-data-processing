@@ -2,8 +2,10 @@ from pathlib import Path
 from typing import cast
 
 import rioxarray as rx
+from kuva_reader import image_footprint
 from kuva_metadata import MetadataLevel2A
 from pint import UnitRegistry
+from shapely import Polygon
 from xarray import Dataset
 
 from .product_base import ProductBase
@@ -55,17 +57,22 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
         self.wavelengths = [
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
+        self.crs = self.image.rio.crs
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
         if self.image is not None:
             return (
                 f"{self.__class__.__name__} with shape {self.image.shape} "
-                f"and wavelengths {self.wavelengths} (CRS: '{self.image.rio.crs}'). "
+                f"and wavelengths {self.wavelengths} (CRS: '{self.crs}'). "
                 f"Loaded from: '{self.image_path}'."
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'"
+
+    def footprint(self, crs="") -> Polygon:
+        """The product footprint as a Shapely polygon."""
+        return image_footprint(self.image, crs)
 
     def _get_data_from_sidecar(
         self, sidecar_path: Path, target_ureg: UnitRegistry | None = None
