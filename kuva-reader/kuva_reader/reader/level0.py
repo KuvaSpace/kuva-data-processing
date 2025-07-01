@@ -106,9 +106,9 @@ class Level0Product(ProductBase[MetadataLevel0]):
         if self.images is not None and len(self.images):
             return (
                 f"{self.__class__.__name__}"
-                f"with {len(self.images["vis"])} frames (VIS) and "
+                f"with {len(self.images["vis"])} frames for VIS and "
                 f"{len(self.images["nir"])} frames for NIR. "
-                f"CRS '{self.images[0].rio.crs}'. Loaded from: '{self.image_path}'."
+                f"CRS '{self.images["vis"].rio.crs}'. Loaded from: '{self.image_path}'."
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'."
