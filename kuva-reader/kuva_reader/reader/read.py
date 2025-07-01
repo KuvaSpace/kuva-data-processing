@@ -25,7 +25,7 @@ def read_product(
 
     product_map = {
         "L0": Level0Product,
-        "L1AB": Level1ABProduct,
+        "L1B": Level1ABProduct,
         "L1C": Level1CProduct,
         "L2A": Level2AProduct,
     }
