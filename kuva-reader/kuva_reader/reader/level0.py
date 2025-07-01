@@ -81,6 +81,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
             )
             for camera, cube in self.metadata.image.data_cubes.items()  # type: ignore
         }
+        self.crs = self.images[list(self.images.keys())[0]].rio.crs
 
         # Read tags for images and denormalize / renormalize if needed
         self.data_tags = {camera: img.attrs for camera, img in self.images.items()}
@@ -109,8 +110,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
                 f"{self.__class__.__name__}"
                 f"with VIS shape {self.images['vis'].shape} "
                 f"and NIR shape {self.images['nir'].shape} "
-                f"(CRS '{self.images["vis"].rio.crs}'). "
-                f"Loaded from: '{self.image_path}'."
+                f"(CRS '{self.crs}'). Loaded from: '{self.image_path}'."
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'."
@@ -122,7 +122,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
     def keys(self) -> list[str]:
         """Easy access to the camera keys."""
         return list(self.images.keys())
-    
+
     def footprint(self, crs="") -> Polygon:
         """The product footprint as a Shapely polygon."""
         return image_footprint(self.images["vis"], crs)

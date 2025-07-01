@@ -57,13 +57,14 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
         self.wavelengths = [
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
+        self.crs = self.image.rio.crs
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
         if self.image is not None:
             return (
                 f"{self.__class__.__name__} with shape {self.image.shape} "
-                f"and wavelengths {self.wavelengths} (CRS: '{self.image.rio.crs}'). "
+                f"and wavelengths {self.wavelengths} (CRS: '{self.crs}'). "
                 f"Loaded from: '{self.image_path}'."
             )
         else:
