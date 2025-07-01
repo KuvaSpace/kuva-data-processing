@@ -38,8 +38,8 @@ The loaded product is stored in a `rioxarray` object, which contains extensive G
 ```python
 from kuva_reader import read_product
 
-l2a_product = read_product("my_data_folder/hyperfield1a_L2A_20250105T092548")
-print(l2a_product)  # Will show some main information such as image shape and CRS
+product = read_product("my_data_folder/hyperfield1a_L2A_20250105T092548")
+print(product)  # Will show some main information such as image shape and CRS
 ```
 
 This assumes a mostly untouched folder after distributing. Otherwise, you may need to
@@ -52,7 +52,21 @@ l2a_product = Level2AProduct("your/l2a/folder")
 ```
 
 The actual raster image is stored and can be analysed in `product.image`, while metadata
-information of the product is in `product.metadata`. 
+information of the product is in `product.metadata`.
+
+## Other tips
+
+The product object attributes and methods allow the retrieval of other interesting information as well:
+
+```python
+from kuva_reader import read_product
+
+product = read_product("your/product/folder")
+product.footprint(crs="EPSG:4326")  # Footprint with option to transform CRS
+product.image.shape  # The image attribute contains all the image data
+product.wavelengths  # Wavelengths corresponding to image bands
+product.crs  # CRS
+```
 
 ## Processing levels
 
