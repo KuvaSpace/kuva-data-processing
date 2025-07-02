@@ -13,7 +13,7 @@ The Kuva Space images are in GeoTIFF format. The products consist of an image or
 images along with its metadata to give all the necessary information to use the products. 
 The metadata lives either in a Kuva Space database, or alternatively in a sidecar JSON file. 
 
-This library allows the reading of the image GeoTIFFs into `xarray.Dataset` objects that 
+This library allows the reading of the image GeoTIFFs into `rasterio.DatasetReader` objects that 
 allow convenient raster manipulations, along with their `kuva-metadata` metadata objects.
 
 # Installation
@@ -33,7 +33,7 @@ pip install kuva-reader
 This is a minimal example that allows you to read and print the image shape of a L2 product.
 
 The result product is in this case an L2A product (as seen from the folder name).
-The loaded product is stored in a `rioxarray` object, which contains extensive GIS functionalities [(examples for usage)](https://corteva.github.io/rioxarray/stable/examples/examples.html).
+The loaded product is stored in a `rasterio.DatasetReader` object, which contains extensive GIS functionalities [(examples for usage)](https://rasterio.readthedocs.io/en/stable/api/rasterio.io.html#rasterio.io.DatasetReader).
 
 ```python
 from kuva_reader import read_product
