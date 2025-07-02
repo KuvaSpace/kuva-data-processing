@@ -2,13 +2,12 @@ from pathlib import Path
 from typing import cast
 
 import numpy as np
-import rioxarray as rx
-import xarray
+import rasterio as rio
 from kuva_metadata import MetadataLevel0
 from pint import UnitRegistry
 from shapely import Polygon
 
-from kuva_reader import image_to_dtype_range, image_to_original_range, image_footprint
+from kuva_reader import image_footprint, image_to_dtype_range, image_to_original_range
 
 from .product_base import ProductBase
 
@@ -53,10 +52,9 @@ class Level0Product(ProductBase[MetadataLevel0]):
         Path to the folder containing the images.
     metadata: MetadataLevel0
         The metadata associated with the images
-    images: Dict[str, xarray.DataArray]
-        The arrays with the actual data. This have the rioxarray extension activated on
-        them so lots of GIS functionality are available on them. Imporantly, the GCPs
-        can be retrieved like so: `ds.rio.get_gcps()`
+    images: Dict[str, rasterio.DatasetReader]
+        A dictionary that maps camera names to their respective Rasterio DatasetReader
+        objects.
     data_tags: Dict[str, Any]
         Tags stored along with the data. These can be used e.g. to check the physical
         units of pixels or normalisation factors.
@@ -74,23 +72,24 @@ class Level0Product(ProductBase[MetadataLevel0]):
 
         self.images = {
             camera: cast(
-                xarray.DataArray,
-                rx.open_rasterio(
+                rio.DatasetReader,
+                rio.open(
                     self.image_path / (cube.camera.name + ".tif"),
                 ),
             )
             for camera, cube in self.metadata.image.data_cubes.items()  # type: ignore
         }
-        self.crs = self.images[list(self.images.keys())[0]].rio.crs
+        self.crs = self.images[list(self.images.keys())[0]].crs
 
         # Read tags for images and denormalize / renormalize if needed
-        self.data_tags = {camera: img.attrs for camera, img in self.images.items()}
+        self.data_tags = {camera: src.tags() for camera, src in self.images.items()}
+
         if as_physical_unit or target_dtype:
             for camera, img in self.images.items():
                 # Move from normalized full scale back to original data float values.
                 # pop() since values not true anymore after denormalization.
                 norm_img = image_to_original_range(
-                    img,
+                    img.read(),
                     self.data_tags[camera].pop("data_offset"),
                     self.data_tags[camera].pop("data_scale"),
                 )
@@ -106,16 +105,22 @@ class Level0Product(ProductBase[MetadataLevel0]):
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
         if self.images is not None and len(self.images):
+            image_shapes = []
+            for camera_name, image in self.images.items():
+                shape_str = f"({image.count}, {image.height}, {image.width})"
+                image_shapes.append(f"{camera_name.upper()} shape {shape_str}")
+
+            shapes_description = " and ".join(image_shapes)
+
             return (
-                f"{self.__class__.__name__}"
-                f"with VIS shape {self.images['vis'].shape} "
-                f"and NIR shape {self.images['nir'].shape} "
-                f"(CRS '{self.crs}'). Loaded from: '{self.image_path}'."
+                f"{self.__class__.__name__} "
+                f"with {shapes_description} and "
+                f"CRS: '{self.crs}'. Loaded from: '{self.image_path}'."
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'."
 
-    def __getitem__(self, camera: str) -> xarray.DataArray:
+    def __getitem__(self, camera: str) -> rio.DatasetReader:
         """Return the datarray for the chosen camera."""
         return self.images[camera]
 
@@ -192,7 +197,11 @@ class Level0Product(ProductBase[MetadataLevel0]):
     def read_frame(self, cube: str, band_id: int, frame_idx: int) -> np.ndarray:
         """Extract a specific frame from a cube and band."""
         frame_offset = self.calculate_frame_offset(cube, band_id, frame_idx)
-        return self[cube][frame_offset, :, :].to_numpy()
+
+        # Rasterio index starts at 1
+        frame_offset += 1
+
+        return self[cube].read(frame_offset)
 
     def read_band(self, cube: str, band_id: int) -> np.ndarray:
         """Extract a specific band from a cube"""
@@ -201,7 +210,12 @@ class Level0Product(ProductBase[MetadataLevel0]):
         # Calculate the final frame offset for this band and frame
         band_offset_ll = band_offsets[band_id]
         band_offset_ul = band_offset_ll + band_n_frames[band_id]
-        return self[cube][band_offset_ll:band_offset_ul, :, :].to_numpy()
+
+        # Rasterio index starts at 1
+        band_offset_ll += 1
+        band_offset_ul += 1
+
+        return self[cube].read(list(np.arange(band_offset_ll, band_offset_ul)))
 
     def read_data_units(self) -> np.ndarray:
         """Read unit of product and validate they match between cameras"""
@@ -213,7 +227,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
             e_ = "Cameras have different physical units stored to them."
             raise ValueError(e_)
 
-    def get_bad_pixel_mask(self, camera: str | None = None) -> xarray.Dataset:
+    def get_bad_pixel_mask(self, camera: str | None = None) -> rio.DatasetReader:
         """Get the bad pixel mask associated to each camera of the L0 product
 
         Returns
@@ -226,7 +240,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
         bad_pixel_filename = f"{camera}_per_frame_bad_pixel_mask.tif"
         return self._read_array(self.image_path / bad_pixel_filename)
 
-    def get_cloud_mask(self, camera: str | None = None) -> xarray.Dataset:
+    def get_cloud_mask(self, camera: str | None = None) -> rio.DatasetReader:
         """Get the cloud mask associated to the product.
 
         Returns
@@ -240,12 +254,12 @@ class Level0Product(ProductBase[MetadataLevel0]):
         return self._read_array(self.image_path / bad_pixel_filename)
 
     def release_memory(self):
-        """Explicitely releases the memory of the `images` variable.
-
-        NOTE: this function is implemented because of a memory leak inside the Rioxarray
-        library that doesn't release memory properly. Only use it when the image data is
-        not needed anymore.
+        """Explicitely closes the Rasterio DatasetReaders and releases the memory of
+        the `images` variable.
         """
+        for k in self.images.keys():
+            self.images[k].close()
+
         del self.images
         self.images = None
 

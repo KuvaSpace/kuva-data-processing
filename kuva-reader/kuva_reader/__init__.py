@@ -17,18 +17,18 @@ Key Features
 Dependencies
 - kuva-metadata: A specialized library that handles the extraction and
   parsing of metadata associated with Kuva Space products.
-- xarray: Used for loading image data as arrays with extra functionality,
-  including labeled coordinates and metadata, which is useful for analysis and
+- rasterio: Used for loading image data as arrays with extra functionality,
+  including GIS specific functions and metadata, which are useful for analysis and
   visualization.
 """
 
 __version__ = "0.1.0"
 
 from .reader.image import (
+    image_footprint,
     image_to_dtype_range,
     image_to_original_range,
     image_to_uint16_range,
-    image_footprint,
 )
 from .reader.level0 import Level0Product
 from .reader.level1 import Level1ABProduct, Level1CProduct
