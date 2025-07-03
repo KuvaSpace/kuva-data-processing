@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kuva-metadata"
-version = "1.0.2"
+version = "1.1.0"
 description = "Definitions of Kuva Space product metadata"
 authors = ["Guillem Ballesteros <guillem@kuvaspace.com>" , "Lennert Antson <lennert.antson@kuvaspace.com>", "Arthur Vandenhoeke <arthur.vandenhoeke@kuvaspace.com>", "Olli Eloranta <olli.eloranta@kuvaspace.com>"]
 readme = "README.md"
