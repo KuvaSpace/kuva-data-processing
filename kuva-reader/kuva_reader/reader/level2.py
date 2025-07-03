@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import cast
 
-import rioxarray as rx
-from kuva_reader import image_footprint
+import rasterio as rio
 from kuva_metadata import MetadataLevel2A
 from pint import UnitRegistry
 from shapely import Polygon
-from xarray import Dataset
+
+from kuva_reader import image_footprint
 
 from .product_base import ProductBase
 
@@ -32,10 +32,8 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
         Path to the folder containing the image.
     metadata: MetadataLevel2A
         The metadata associated with the images
-    image: xarray.DataArray
-        The arrays with the actual data. This have the rioxarray extension activated on
-        them so lots of GIS functionality are available on them. For example, the GCPs
-        if any could be retrieved like so: `ds.rio.get_gcps()`
+    image: rasterio.DatasetReader
+        The Rasterio DatasetReader to open the image and other metadata with.
     data_tags: dict
         Tags saved along with the product. The tag "data_unit" shows what the unit of
         the product actually is.
@@ -50,20 +48,22 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
         super().__init__(image_path, metadata, target_ureg)
 
         self.image = cast(
-            Dataset,
-            rx.open_rasterio(self.image_path / "L2A.tif"),
+            rio.DatasetReader,
+            rio.open(self.image_path / "L2A.tif"),
         )
-        self.data_tags = self.image.attrs
+        self.data_tags = self.image.tags()
+
         self.wavelengths = [
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
-        self.crs = self.image.rio.crs
+        self.crs = self.image.crs
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
         if self.image is not None:
+            shape_str = f"({self.image.count}, {self.image.height}, {self.image.width})"
             return (
-                f"{self.__class__.__name__} with shape {self.image.shape} "
+                f"{self.__class__.__name__} with shape {shape_str} "
                 f"and wavelengths {self.wavelengths} (CRS: '{self.crs}'). "
                 f"Loaded from: '{self.image_path}'."
             )
@@ -105,12 +105,10 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
         return metadata
 
     def release_memory(self):
-        """Explicitely releases the memory of the `image` variable.
-
-        NOTE: this function is implemented because of a memory leak inside the Rioxarray
-        library that doesn't release memory properly. Only use it when the image data is
-        not needed anymore.
+        """Explicitely closes the Rasterio DatasetReader and releases the memory of
+        the `image` variable.
         """
+        self.image.close()
         del self.image
         self.image = None
 

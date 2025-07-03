@@ -2,11 +2,10 @@ from abc import ABCMeta, abstractmethod
 from pathlib import Path
 from typing import Generic, TypeVar, cast
 
-import rioxarray as rx
+import rasterio as rio
 from kuva_metadata.sections_common import MetadataBase
 from pint import UnitRegistry
 from pydantic import BaseModel
-from xarray import Dataset
 
 TMetadata = TypeVar("TMetadata", bound=BaseModel)
 
@@ -66,17 +65,17 @@ class ProductBase(Generic[TMetadata], metaclass=ABCMeta):
         pass
 
     @staticmethod
-    def _read_array(array_path: Path) -> Dataset:
+    def _read_array(array_path: Path) -> rio.DatasetReader:
         if array_path.exists():
             return cast(
-                Dataset,
-                rx.open_rasterio(array_path),
+                rio.DatasetReader,
+                rio.open(array_path),
             )
         else:
             e_ = f"Product does not contain the array to be read at '{array_path}'"
             raise ValueError(e_)
 
-    def get_bad_pixel_mask(self, camera: str | None = None) -> Dataset:
+    def get_bad_pixel_mask(self, camera: str | None = None) -> rio.DatasetReader:
         """Get the bad pixel mask associated to the product.
 
         Parameters
@@ -94,7 +93,7 @@ class ProductBase(Generic[TMetadata], metaclass=ABCMeta):
             raise ValueError(e_)
         return self._read_array(self.image_path / "bad_pixel_mask_aggregated.tif")
 
-    def get_cloud_mask(self, camera: str | None = None) -> Dataset:
+    def get_cloud_mask(self, camera: str | None = None) -> rio.DatasetReader:
         """Get the cloud mask associated to the product.
 
         Parameters
