@@ -1,8 +1,8 @@
 """Utilities to process images related to product processing."""
+
 import rasterio as rio
-from pyproj import Transformer
-from shapely import Polygon
-from shapely.geometry import box
+from shapely.geometry import box, Polygon
+from rasterio.warp import transform_bounds
 
 
 def image_footprint(image: rio.DatasetReader, crs: str = "") -> Polygon:
@@ -20,11 +20,9 @@ def image_footprint(image: rio.DatasetReader, crs: str = "") -> Polygon:
         A shapely polygon footprint
     """
     if crs:
-        transformer = Transformer.from_crs(image.crs, crs, always_xy=True)
-        bounds = image.bounds
-        minx, miny = transformer.transform(bounds[0], bounds[1])
-        maxx, maxy = transformer.transform(bounds[2], bounds[3])
-        footprint = box(minx, miny, maxx, maxy)
+        # Transform the bounds to the new CRS using rasterio's built-in function
+        bounds = transform_bounds(image.crs, crs, *image.bounds)
+        footprint = box(*bounds)
     else:
         footprint = box(*image.bounds)
     return footprint
