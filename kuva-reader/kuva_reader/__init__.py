@@ -26,9 +26,6 @@ __version__ = "0.1.0"
 
 from .reader.image import (
     image_footprint,
-    image_to_dtype_range,
-    image_to_original_range,
-    image_to_uint16_range,
 )
 from .reader.level0 import Level0Product
 from .reader.level1 import Level1ABProduct, Level1CProduct
@@ -40,9 +37,6 @@ __all__ = [
     "Level1ABProduct",
     "Level1CProduct",
     "Level2AProduct",
-    "image_to_dtype_range",
-    "image_to_original_range",
-    "image_to_uint16_range",
     "image_footprint",
     "read_product",
 ]

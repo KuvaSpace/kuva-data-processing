@@ -7,7 +7,7 @@ from kuva_metadata import MetadataLevel0
 from pint import UnitRegistry
 from shapely import Polygon
 
-from kuva_reader import image_footprint, image_to_dtype_range, image_to_original_range
+from kuva_reader import image_footprint
 
 from .product_base import ProductBase
 
@@ -38,13 +38,6 @@ class Level0Product(ProductBase[MetadataLevel0]):
     target_ureg, optional
         Pint Unit Registry to swap to. This is only relevant when parsing data from a
         JSON file, which by default uses the kuva-metadata ureg.
-    as_physical_unit
-        Whether to denormalize data from full data type range back to the physical
-        units stored with the data, by default False
-    target_dtype
-        Target data type to normalize data to. This will first denormalize the data
-        to its original range and then normalize to new data type range to keep a
-        scale and offset, by default None
 
     Attributes
     ----------
@@ -65,8 +58,6 @@ class Level0Product(ProductBase[MetadataLevel0]):
         image_path: Path,
         metadata: MetadataLevel0 | None = None,
         target_ureg: UnitRegistry | None = None,
-        as_physical_unit: bool = False,
-        target_dtype: np.dtype | None = None,
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
@@ -83,24 +74,6 @@ class Level0Product(ProductBase[MetadataLevel0]):
 
         # Read tags for images and denormalize / renormalize if needed
         self.data_tags = {camera: src.tags() for camera, src in self.images.items()}
-
-        if as_physical_unit or target_dtype:
-            for camera, img in self.images.items():
-                # Move from normalized full scale back to original data float values.
-                # pop() since values not true anymore after denormalization.
-                norm_img = image_to_original_range(
-                    img.read(),
-                    self.data_tags[camera].pop("data_offset"),
-                    self.data_tags[camera].pop("data_scale"),
-                )
-                self.images[camera] = norm_img
-
-                if target_dtype:
-                    # For algorithm needs, cast and normalize to a specific dtype range
-                    # NOTE: This may remove data precision e.g. uint16 -> uint8
-                    norm_img, offset, scale = image_to_dtype_range(img, target_dtype)
-                    self.data_tags[camera]["data_offset"] = offset
-                    self.data_tags[camera]["data_scale"] = scale
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
