@@ -76,7 +76,7 @@ information of the product is in `product.metadata`.
 
 # Contributing and development
 
-Please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
+Please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md) when developing. It also contains details on testing and deployment.
 
 Also, please follow our [Code of Conduct](CODE_OF_CONDUCT.md) while discussing in the
 issues and pull requests.
