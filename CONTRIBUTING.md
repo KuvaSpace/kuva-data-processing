@@ -184,8 +184,9 @@ To publish to PyPi, first verify the code to be published by following the steps
 1. Configure PyPi credentials for Poetry if not already done
 2. Verify that you are in the correct branch (*develop* or *main*)
 3. `cd` into the sub-package to update
-4. Review/verify code integrity and run tests
+4. Review/verify code integrity and run tests: `poetry run pytest`
 5. Update package version in the `pyproject.toml` file
+    - Also update the version in depending packages to ensure users get the latest version
 
 Then, procees with the publishing
 

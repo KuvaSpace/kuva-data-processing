@@ -10,7 +10,7 @@ The Kuva Space images are in GeoTIFF format. The products consist of an image or
 images along with its metadata to give all the necessary information to use the products. 
 The metadata lives either in a Kuva Space database, or alternatively in a sidecar JSON file. 
 
-This library allows the reading of the image GeoTIFFs into `xarray.Dataset` objects that 
+This library allows the reading of the image GeoTIFFs into `rasterio.DatasetReader` objects that 
 allow convenient raster manipulations, along with their `kuva-metadata` metadata objects.
 
 ## Processing levels

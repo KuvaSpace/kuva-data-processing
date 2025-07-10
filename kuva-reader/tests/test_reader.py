@@ -45,7 +45,7 @@ def test_product_reader():
 def test_read_l1c(l1c_product: Level1CProduct):
     """Product reading was successful based on image, metadata and tags"""
     # Check that image was loaded with correct number of bands
-    assert l1c_product.image.shape[0] == 5
+    assert l1c_product.image.read().shape[0] == 5
     # Check that metadata exists and has same shape as image
     assert len(l1c_product.metadata.image.bands) == 5
     # Check that tags exist
@@ -55,7 +55,7 @@ def test_read_l1c(l1c_product: Level1CProduct):
 def test_read_l2a(l2a_product: Level2AProduct):
     """Product reading was successful based on image, metadata and tags"""
     # Check that image was loaded with correct number of bands
-    assert l2a_product.image.shape[0] == 5
+    assert l2a_product.image.read().shape[0] == 5
     # Check that metadata exists and has same shape as image
     assert len(l2a_product.metadata.image.bands) == 5
     # Check that tags exist
@@ -64,11 +64,11 @@ def test_read_l2a(l2a_product: Level2AProduct):
 
 def test_read_bad_pixel_mask_l1c(l1c_product: Level1CProduct):
     """Bad pixel mask is correctly loaded and is same shape as product"""
-    bad_pixel_mask = l1c_product.get_bad_pixel_mask()
-    assert bad_pixel_mask.shape[1:] == l1c_product.image.shape[1:]
+    bad_pixel_mask = l1c_product.get_bad_pixel_mask().read()
+    assert bad_pixel_mask.shape[1:] == l1c_product.image.shape
 
 
 def test_read_bad_pixel_mask_l2a(l2a_product: Level2AProduct):
     """Bad pixel mask is correctly loaded and is same shape as product"""
-    bad_pixel_mask = l2a_product.get_bad_pixel_mask()
-    assert bad_pixel_mask.shape[1:] == l2a_product.image.shape[1:]
+    bad_pixel_mask = l2a_product.get_bad_pixel_mask().read()
+    assert bad_pixel_mask.shape[1:] == l2a_product.image.shape
