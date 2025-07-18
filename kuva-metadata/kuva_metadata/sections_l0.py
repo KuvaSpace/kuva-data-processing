@@ -350,6 +350,12 @@ class Frame(BaseModelWithUnits):
     position
         ECEF geodetic coordinates (estimated from telemetry) of the position of the
         spacecraft in at the start of frame acquisition (SRID=4978).
+    zenith_viewing_angle
+        Represents the satellite's elevation angle in degrees above the horizon
+        as seen from the ground target.
+    azimuth_viewing_angle
+        Represents the satellite's horizontal direction in degrees from the
+        ground target, measured clockwise from north.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]
@@ -374,13 +380,12 @@ class Frame(BaseModelWithUnits):
         check_is_utc_datetime
     )
     _parse_geom = field_validator("position", mode="before")(parse_crs_geometry)
+
+    _check_zenith_angle = field_validator("zenith_viewing_angle", mode="before")(must_be_angle)
+    _check_azimuth_angle = field_validator("azimuth_viewing_angle", mode="before")(must_be_angle)
+
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
-    _parse_zenith_angle = field_validator("zenith_viewing_angle", mode="before")(parse_crs_geometry)
-    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
-    _parse_azimuth_angle = field_validator("azimuth_viewing_angle: Quantity | None", mode="before")(parse_crs_geometry)
-    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
-    
     def footprint(self, camera: Camera) -> Polygon:
         """Get the ground footprint of a frame if it were taken by camera"""
         camera_footprint = frame_footprint(self, camera, use_negative_sensor_plane=True)
