@@ -1,26 +1,38 @@
 [build-system]
-requires = [ "poetry-core>=1.0.0",]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "kuva-geometry"
 version = "1.0.1"
 description = "Definitions and helper functionalities for Kuva Space geometric operations"
-authors = [ "Guillem Ballesteros <guillem@kuvaspace.com>" , "Lennert Antson <lennert.antson@kuvaspace.com>", "Arthur Vandenhoeke <arthur.vandenhoeke@kuvaspace.com>", "Olli Eloranta <olli.eloranta@kuvaspace.com>" ]
+authors = [
+  { name = "Guillem Ballesteros", email = "guillem@kuvaspace.com" },
+  { name = "Lennert Antson", email = "lennert.antson@kuvaspace.com" },
+  { name = "Arthur Vandenhoeke", email = "arthur.vandenhoeke@kuvaspace.com" }
+  { name = "Olli Eloranta", email = "olli.eloranta@kuvaspace.com" },
+]
 readme = "README.md"
 license = "MIT"
+requires-python = ">=3.10, <=3.13"
+dependencies = [
+  "numpy>=1.26.4,<2.0.0",
+  "numpy-quaternion>=2022.4.4,<2023.0.0",
+  "pint >=0.22, <1.0.0",
+  "sympy>=1.13.3,<2.0.0"
+]
+
+[dependency-groups]
+dev = [
+  "pyright>=1.1.403",
+  "pytest>=7.4.2,<8",
+  "ruff>=0.12.4",
+]
 
 [tool.ruff]
 target-version = "py310"
 line-length = 88
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-[tool.poetry.dependencies]
-python = ">=3.10,<=3.13"
-numpy-quaternion = "^2022.4.4"
-numpy = "^1.26.4"
-pint = "^0.22"
-sympy = "^1.13.3"
 
 [tool.ruff.lint]
 select = [ "E", "F", "A", "DTZ", "NPY", "I", "ISC", "B003", "B004", "B015", "PTH", "D100", "D101", "D102", "D103", "D104", "D105", "D200", "W191", "W291", "W293", "N801", "N804", "N805", "T100", "S105", "S106", "S108", "S604", "S602", "S609", "UP003", "UP005", "UP006", "UP007", "UP008", "UP032", "UP035", "RUF001", "RUF200", "RUF013", "C901", "COM818", "RSE102", "EM101",]
@@ -34,8 +46,3 @@ convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [ "F401", "D104", "E402" ]
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.2.0"
-pytest = "^7.4.2"
-ruff = "^0.1.1"
