@@ -130,8 +130,12 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of
         the `image` variable.
         """
+        self.image.close()
         del self.image
-        self.image = None
+        # Lie to the typechecker so that it doesn't think that image can be
+        # None when it really cannot. A more convoluted but rigorous solution
+        # is to hide image behind a property and internally have _image
+        self.image = cast(rio.DatasetReader, None)
 
 
 class Level1CProduct(ProductBase[MetadataLevel1C]):
@@ -233,7 +237,10 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
         """
         self.image.close()
         del self.image
-        self.image = None
+        # Lie to the typechecker so that it doesn't think that image can be
+        # None when it really cannot. A more convoluted but rigorous solution
+        # is to hide image behind a property and internally have _image
+        self.image = cast(rio.DatasetReader, None)
 
 
 def generate_level_1_metafile():

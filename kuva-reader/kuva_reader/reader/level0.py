@@ -234,7 +234,9 @@ class Level0Product(ProductBase[MetadataLevel0]):
             self.images[k].close()
 
         del self.images
-        self.images = None
+        # We know that images are not None as long as somebody doesn't call
+        # this function beforehand....
+        self.images = cast(rio.DatasetReader, None)  # to appease pyright
 
 
 def generate_level_0_metafile():
