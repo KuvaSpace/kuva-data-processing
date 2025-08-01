@@ -50,7 +50,7 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
-        self.image = cast(
+        self._image = cast(
             rio.DatasetReader,
             rio.open(self.image_path / "L1B.tif"),
         )
@@ -72,6 +72,12 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'"
+
+    @property
+    def image(self) -> rio.DatasetReader:
+        if self._image is None:
+            raise RuntimeError("Images has been released.")
+        return self._image
 
     def footprint(self, crs="") -> Polygon:
         """The product footprint as a Shapely polygon."""
@@ -130,12 +136,10 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of
         the `image` variable.
         """
-        self.image.close()
-        del self.image
-        # Lie to the typechecker so that it doesn't think that image can be
-        # None when it really cannot. A more convoluted but rigorous solution
-        # is to hide image behind a property and internally have _image
-        self.image = cast(rio.DatasetReader, None)
+        if self._image is not None:
+            self._image.close()
+            del self._image
+            self._image = None
 
 
 class Level1CProduct(ProductBase[MetadataLevel1C]):
@@ -174,7 +178,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
-        self.image = cast(
+        self._image = cast(
             rio.DatasetReader,
             rio.open(self.image_path / "L1C.tif"),
         )
@@ -196,6 +200,12 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'"
+
+    @property
+    def image(self) -> rio.DatasetReader:
+        if self._image is None:
+            raise RuntimeError("Images has been released.")
+        return self._image
 
     def footprint(self, crs="") -> Polygon:
         """The product footprint as a Shapely polygon."""
@@ -235,12 +245,10 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of
         the `image` variable.
         """
-        self.image.close()
-        del self.image
-        # Lie to the typechecker so that it doesn't think that image can be
-        # None when it really cannot. A more convoluted but rigorous solution
-        # is to hide image behind a property and internally have _image
-        self.image = cast(rio.DatasetReader, None)
+        if self._image is not None:
+            self._image.close()
+            del self._image
+            self._image = None
 
 
 def generate_level_1_metafile():

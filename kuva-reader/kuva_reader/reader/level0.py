@@ -61,7 +61,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
-        self.images = {
+        self._images = {
             camera: cast(
                 rio.DatasetReader,
                 rio.open(
@@ -96,6 +96,12 @@ class Level0Product(ProductBase[MetadataLevel0]):
     def __getitem__(self, camera: str) -> rio.DatasetReader:
         """Return the datarray for the chosen camera."""
         return self.images[camera]
+
+    @property
+    def images(self) -> dict[str, rio.DatasetReader]:
+        if self._images is None:
+            raise RuntimeError("Images has been released.")
+        return self._images
 
     def keys(self) -> list[str]:
         """Easy access to the camera keys."""
@@ -230,13 +236,15 @@ class Level0Product(ProductBase[MetadataLevel0]):
         """Explicitely closes the Rasterio DatasetReaders and releases the memory of
         the `images` variable.
         """
-        for k in self.images.keys():
-            self.images[k].close()
+        if self._images is not None:
+            for k in self._images.keys():
+                self._images[k].close()
+                del self._images[k]
 
-        del self.images
-        # We know that images are not None as long as somebody doesn't call
-        # this function beforehand....
-        self.images = cast(rio.DatasetReader, None)  # to appease pyright
+            del self._images
+            # We know that images are not None as long as somebody doesn't call
+            # this function beforehand....
+            self._images = None
 
 
 def generate_level_0_metafile():
