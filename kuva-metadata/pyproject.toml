@@ -9,7 +9,7 @@ description = "Definitions of Kuva Space product metadata"
 authors = [
   { name = "Guillem Ballesteros", email = "guillem@kuvaspace.com" },
   { name = "Lennert Antson", email = "lennert.antson@kuvaspace.com" },
-  { name = "Arthur Vandenhoeke", email = "arthur.vandenhoeke@kuvaspace.com" }
+  { name = "Arthur Vandenhoeke", email = "arthur.vandenhoeke@kuvaspace.com" },
   { name = "Olli Eloranta", email = "olli.eloranta@kuvaspace.com" },
 ]
 readme = "README.md"

@@ -9,7 +9,7 @@ description = "Manipulate the Kuva Space image and metadata formats"
 authors = [
   { name = "Guillem Ballesteros", email = "guillem@kuvaspace.com" },
   { name = "Lennert Antson", email = "lennert.antson@kuvaspace.com" },
-  { name = "Arthur Vandenhoeke", email = "arthur.vandenhoeke@kuvaspace.com" }
+  { name = "Arthur Vandenhoeke", email = "arthur.vandenhoeke@kuvaspace.com" },
   { name = "Olli Eloranta", email = "olli.eloranta@kuvaspace.com" },
 ]
 readme = "README.md"
@@ -20,7 +20,7 @@ dependencies = [
   "numpy-quaternion>=2022.4.4,<2023.0.0",
   "pint >=0.22, <1.0.0",
   "rasterio>=1.4.3,<2",
-  "kuva-geometry>=1.0.1,<2.0.0"
+  "kuva-geometry>=1.0.1,<2.0.0",
   "kuva-metadata>=1.1.1,<2.0.0"
 ]
 scripts.make-l0-meta = "kuva_reader.reader.level0:generate_level_0_metafile"
