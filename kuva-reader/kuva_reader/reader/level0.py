@@ -239,7 +239,6 @@ class Level0Product(ProductBase[MetadataLevel0]):
         if self._images is not None:
             for k in self._images.keys():
                 self._images[k].close()
-                del self._images[k]
 
             del self._images
             # We know that images are not None as long as somebody doesn't call
