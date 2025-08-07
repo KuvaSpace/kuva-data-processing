@@ -21,7 +21,6 @@ dependencies = [
   "pint >=0.22, <1.0.0",
   "rasterio>=1.4.3,<2",
   "kuva-geometry>=1.0.1,<2.0.0",
-  "kuva-metadata>=1.1.1,<2.0.0",
   "networkx>=3.4.2,<4.0.0",
   "pydantic>=2.9.2,<3.0.0",
   "shapely>=2.0.6,<3.0.0",
