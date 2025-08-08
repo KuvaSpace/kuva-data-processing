@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kuva-geometry"
-version = "1.0.1"
+version = "1.0.2"
 description = "Definitions and helper functionalities for Kuva Space geometric operations"
 authors = [
   { name = "Guillem Ballesteros", email = "guillem@kuvaspace.com" },
