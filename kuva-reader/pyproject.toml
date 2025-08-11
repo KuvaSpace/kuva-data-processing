@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kuva-reader"
-version = "1.1.1"
+version = "1.1.2"
 description = "Manipulate the Kuva Space image and metadata formats"
 authors = [
   { name = "Guillem Ballesteros", email = "guillem@kuvaspace.com" },
@@ -16,8 +16,8 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10, <=3.13"
 dependencies = [
-  "numpy>=1.26.4,<2.0.0",
-  "numpy-quaternion>=2022.4.4,<2023.0.0",
+  "numpy>=1.26.4",
+  "numpy-quaternion>=2023.4.4",
   "pint >=0.22, <1.0.0",
   "rasterio>=1.4.3,<2",
   "kuva-geometry>=1.0.1,<2.0.0",
@@ -51,3 +51,8 @@ convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [ "F401", "D104", "E402",]
+
+# Uncomment during development
+# [tool.uv.sources]
+# kuva-geometry = { path = "../kuva-geometry" }
+# kuva-metadata = { path = "../kuva-metadata" }

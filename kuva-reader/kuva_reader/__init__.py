@@ -22,7 +22,7 @@ Dependencies
   visualization.
 """
 
-__version__ = "0.1.0"
+__version__ = "1.1.2"
 
 from .reader.image import (
     image_footprint,

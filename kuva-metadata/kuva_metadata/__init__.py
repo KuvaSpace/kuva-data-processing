@@ -9,6 +9,8 @@ If you are interested on reading from the Hyperfield metadata database into such
 objects then you want to look at the `hyperfield-db` project.
 """
 
+__version__ = "1.1.2"
+
 from .sections_common import MetadataBase
 from .sections_l0 import MetadataLevel0
 from .sections_l1 import MetadataLevel1AB, MetadataLevel1C
