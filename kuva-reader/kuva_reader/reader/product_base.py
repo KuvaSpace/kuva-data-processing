@@ -35,7 +35,7 @@ class ProductBase(Generic[TMetadata], metaclass=ABCMeta):
     def __init__(
         self,
         image_path: Path,
-        metadata: MetadataBase | None = None,
+        metadata: TMetadata | None = None,
         target_ureg: UnitRegistry | None = None,
     ):
         self.image_path = Path(image_path)

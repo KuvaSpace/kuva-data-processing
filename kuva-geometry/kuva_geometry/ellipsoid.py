@@ -186,7 +186,7 @@ def geodetic_to_xyz(𝜑: np.ndarray, 𝜆: np.ndarray, h: np.ndarray) -> np.nda
 
 def basis_at_point(
     𝜑: float, 𝜆: float, h: float, ellipsoid: Ellipsoid
-) -> list[Ellipsoid]:
+) -> list[np.ndarray]:
     """
     Returns the basis function for ellipsoidal coordinates.
 
