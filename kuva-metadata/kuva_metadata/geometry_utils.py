@@ -90,8 +90,11 @@ def get_sensor_rays(
 
 
 def frame_ray_Earth_intersections(
-    sensor_coords: np.ndarray, frame: Frame, camera: Camera
-) -> list[shapely.Point]:
+    sensor_coords: np.ndarray,
+    frame: Frame,
+    camera: Camera,
+    mode: str = "shapely",
+) -> list[shapely.Point] | np.ndarray:
     """
     Return the intersecton of camera ray with the WGS84 ellipsoid.
 
@@ -105,6 +108,8 @@ def frame_ray_Earth_intersections(
         position.
     camera
         The camera parameters
+    mode, optional
+        Whether to return a list of shapely points or a numpy array, by default "shapely"
 
     Returns
     -------
@@ -120,12 +125,22 @@ def frame_ray_Earth_intersections(
 
     rays = rays / np.sqrt((rays**2).sum(axis=1))[:, None]
 
-    intersections = [
-        shapely.Point(*ellipsoid.ray_Earth_intersection(sat_pos, rays[idx]))
-        for idx in range(rays.shape[0])
-    ]
+    intersections = ellipsoid.ray_Earth_intersection_new(sat_pos, rays)
 
-    return intersections
+    match mode:
+            case "shapely":
+                intersection_points = [
+                    shapely.Point(intersections[idx][0] ,intersections[idx][1], intersections[idx][2])
+                    for idx in range(intersections.shape[0])
+                ]
+            case "array":
+                intersection_points = intersections
+            case _:
+                e_ = "The valid modes are shapely and array"
+                raise ValueError(e_)
+
+
+    return intersection_points
 
 
 def frame_footprint(
