@@ -3,7 +3,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Any, cast
+from typing import Annotated, Any, Optional, cast
 
 import networkx as nx
 import numpy as np
@@ -364,8 +364,8 @@ class Frame(BaseModelWithUnits):
     integration_time: Quantity
     sat_ecef_orientation: quaternion
     position: CRSGeometry
-    zenith_viewing_angle: Quantity | None
-    azimuth_viewing_angle: Quantity | None
+    zenith_viewing_angle: Optional[Quantity] = Field(default=None)
+    azimuth_viewing_angle: Optional[Quantity] = Field(default=None)
 
     _check_int_time = field_validator("integration_time", mode="before")(
         must_be_positive_time
@@ -408,6 +408,14 @@ class Frame(BaseModelWithUnits):
     @field_serializer("position")
     def _serialize_CRSGeometry(self, p: CRSGeometry):
         return serialize_CRSGeometry(p)
+
+    @field_serializer("zenith_viewing_angle", when_used="json")
+    def _serialize_zenith_angle(self, q: Quantity | None):
+        return serialize_quantity(q)
+
+    @field_serializer("azimuth_viewing_angle", when_used="json")
+    def _serialize_azimuth_angle(self, q: Quantity | None):
+        return serialize_quantity(q)
 
 
 class Band(BaseModelWithUnits):
