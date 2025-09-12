@@ -128,16 +128,16 @@ def frame_ray_Earth_intersections(
     intersections = ellipsoid.ray_Earth_intersection_new(sat_pos, rays)
 
     match mode:
-            case "shapely":
-                intersection_points = [
-                    shapely.Point(intersections[idx][0] ,intersections[idx][1], intersections[idx][2])
-                    for idx in range(intersections.shape[0])
-                ]
-            case "array":
-                intersection_points = intersections
-            case _:
-                e_ = "The valid modes are shapely and array"
-                raise ValueError(e_)
+        case "shapely":
+            intersection_points = [
+                shapely.Point(intersections[idx][0], intersections[idx][1], intersections[idx][2])
+                for idx in range(intersections.shape[0])
+            ]
+        case "array":
+            intersection_points = intersections 
+        case _:
+            e_ = "The valid modes are 'shapely' and 'array'."
+            raise ValueError(e_)
 
 
     return intersection_points
