@@ -1,30 +1,20 @@
 """Metadata specification for L1 products"""
 
-from datetime import datetime
-
-from pint import Quantity
-from pydantic import UUID4, ConfigDict, field_serializer, field_validator
+from pydantic import ConfigDict
 
 # Unused imports are kept so that common objects are available with one import
 from kuva_metadata.sections_common import (  # noqa # pylint: disable=unused-import
-    BaseModelWithUnits,
+    Band,
     Header,
+    Image,
     MetadataBase,
     Radiometry,
     RPCoefficients,
     Satellite,
 )
 
-from .serializers import serialize_quantity
-from .validators import (
-    check_is_utc_datetime,
-    must_be_angle,
-    must_be_positive_distance,
-    parse_date,
-)
 
-
-class Band(BaseModelWithUnits):
+class BandL1AB(Band):
     """Band metadata.
 
     Attributes
@@ -33,74 +23,45 @@ class Band(BaseModelWithUnits):
         Index within a datacube associated with the band (0-indexed).
     wavelength
         Nominal wavelength associated with the Fabry-Perot Interferometer position.
+    scale
+        Scale to convert stored pixel values to radiance.
+    offset
+        Offset to convert stored pixel values to radiance.
+    toa_radiance_to_reflectance_factor
+        Factor to convert from top-of-atmosphere radiance to reflectance.
+        Example: reflectance = radiance * toa_radiance_to_reflectance_factor
     """
 
-    index: int
-    wavelength: Quantity
-
-    _check_wl_distance = field_validator("wavelength", mode="before")(
-        must_be_positive_distance
-    )
-    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
-
-    @field_serializer("wavelength", when_used="json")
-    def _serialize_quantity(self, q: Quantity):
-        return serialize_quantity(q)
+    toa_radiance_to_reflectance_factor: float = 1.0
 
 
-class Image(BaseModelWithUnits):
-    """Hyperspectral image metadata containing bands
+class BandL1C(Band):
+    """Band metadata.
 
     Attributes
     ----------
-    bands
-        _description_
-    local_solar_zenith_angle
-        Solar zenith angle of the image area
-    local_solar_azimuth_angle
-        Solar azimuth angle of the image area
-    local_viewing_angle
-        The angle between the satellite's pointing direction and nadir.
-    acquired_on
-        Time of image acquisition
-    source_images
-        List of database IDs of images this L1 product image has been stitched from
-    measured_quantity_name
-        Name of pixel value unit
-    measured_quantity_unit
-        Unit of pixel values
-    cloud_cover_percentage
-        The cloud cover percentage
+    index
+        Index within a datacube associated with the band (0-indexed).
+    wavelength
+        Nominal wavelength associated with the Fabry-Perot Interferometer position.
+    scale
+        Scale to convert stored pixel values to radiance.
+    offset
+        Offset to convert stored pixel values to radiance.
+    toa_radiance_to_reflectance_factor
+        Factor to convert from top-of-atmosphere radiance to reflectance.
+        Example: reflectance = radiance * toa_radiance_to_reflectance_factor
     """
 
-    bands: list[Band]
-    local_solar_zenith_angle: Quantity
-    local_solar_azimuth_angle: Quantity
-    local_viewing_angle: Quantity
-    acquired_on: datetime
-    source_images: list[UUID4]
-    measured_quantity_name: str
-    measured_quantity_unit: str
-    cloud_cover_percentage: float | None
+    toa_radiance_to_reflectance_factor: float = 1.0
 
-    _check_angle = field_validator(
-        "local_solar_zenith_angle",
-        "local_solar_azimuth_angle",
-        "local_viewing_angle",
-        mode="before",
-    )(must_be_angle)
-    _parse_timestamp = field_validator("acquired_on", mode="before")(parse_date)
-    _check_tz = field_validator("acquired_on")(check_is_utc_datetime)
-    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
-    @field_serializer(
-        "local_solar_zenith_angle",
-        "local_solar_azimuth_angle",
-        "local_viewing_angle",
-        when_used="json",
-    )
-    def _serialize_quantity(self, q: Quantity):
-        return serialize_quantity(q)
+class ImageL1AB(Image):
+    bands: list[BandL1AB]
+
+
+class ImageL1C(Image):
+    bands: list[BandL1C]
 
 
 class MetadataLevel1AB(MetadataBase):
@@ -112,8 +73,7 @@ class MetadataLevel1AB(MetadataBase):
         All attributes included in parent MetadataBase
     """
 
-    image: Image
-
+    image: ImageL1AB
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
 
