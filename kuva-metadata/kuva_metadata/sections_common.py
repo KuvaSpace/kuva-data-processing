@@ -1,6 +1,5 @@
 import typing
 from datetime import datetime
-from pathlib import Path
 from typing import cast
 from zoneinfo import ZoneInfo
 
@@ -14,8 +13,13 @@ from pydantic import (
 )
 from rasterio.rpc import RPC
 
-from kuva_metadata.serializers import serialize_RPCs
-from kuva_metadata.validators import check_is_utc_datetime, parse_rpcs, parse_date
+from kuva_metadata.serializers import serialize_camera_radiometric_ids, serialize_RPCs
+from kuva_metadata.validators import (
+    check_is_utc_datetime,
+    parse_camera_radiometric_ids,
+    parse_date,
+    parse_rpcs,
+)
 
 _T = typing.TypeVar("_T")
 
@@ -66,20 +70,25 @@ class Satellite(BaseModel):
 
 
 class Radiometry(BaseModel):
-    """Information required for TOA calculations and physical units
+    """Radiometric model per camera used to create the product.
 
     Attributes
     ----------
-    lut_file
-        A lookup table stored together with the image file that associates raw image
-        values to a radiance for different wavelengths and integration times. Stored as
-        a numpy `npy` file.
-    sun_spectrum_file
-        Sun spectrum radiance of each band. Required for top of atmosphere calculation.
+    camera_radiometric_ids
+        A mapping of camera names to their respective radiometric model IDs.
     """
 
-    lut_file: Path
-    sun_spectrum_file: Path
+    camera_radiometric_ids: dict[str, UUID4]
+
+    _parse_camera_radiometric_ids = field_validator(
+        "camera_radiometric_ids", mode="before"
+    )(parse_camera_radiometric_ids)
+
+    @field_serializer("camera_radiometric_ids")
+    def _serialize_camera_radiometric_ids(
+        self, camera_radiometric_ids: dict[str, UUID4]
+    ) -> dict[str, str]:
+        return serialize_camera_radiometric_ids(camera_radiometric_ids)
 
 
 class RPCoefficients(BaseModel):
@@ -147,6 +156,9 @@ class MetadataBase(BaseModelWithUnits):
         Metadata ID for identifying metadata from DB
     header
         Metadata file header
+    radiometric_model
+        Radiometric model used to create the product. Defaults to None for backwards
+        compatibility, but should be always set, if possible.
     satellite
         Satellite the metadata's product has been created for
     image
@@ -155,6 +167,7 @@ class MetadataBase(BaseModelWithUnits):
 
     id: UUID4
     header: Header
+    radiometric_model: Radiometry | None = None
     satellite: Satellite
 
 
