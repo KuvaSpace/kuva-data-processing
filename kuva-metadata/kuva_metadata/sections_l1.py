@@ -124,11 +124,7 @@ class MetadataLevel1C(MetadataBase):
     ----------
     MetadataBase attributes
         All attributes included in parent MetadataBase
-    rpcs
-        Rational polynomial function coefficients for product orthorectification
     """
 
-    image: Image
-    rpcs: RPCoefficients | None
-
+    image: ImageL1C
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
