@@ -8,15 +8,27 @@ from pydantic import (
     UUID4,
     BaseModel,
     ConfigDict,
+    SerializationInfo,
     field_serializer,
     field_validator,
 )
+from rasterio import Affine
 from rasterio.rpc import RPC
 
-from kuva_metadata.serializers import serialize_camera_radiometric_ids, serialize_RPCs
+from kuva_metadata.custom_types import CRSGeometry
+from kuva_metadata.serializers import (
+    serialize_camera_radiometric_ids,
+    serialize_CRSGeometry,
+    serialize_quantity,
+    serialize_rio_metadata,
+    serialize_RPCs,
+)
 from kuva_metadata.validators import (
     check_is_utc_datetime,
+    must_be_angle,
+    must_be_positive_distance,
     parse_camera_radiometric_ids,
+    parse_crs_geometry,
     parse_date,
     parse_rpcs,
 )
@@ -205,3 +217,140 @@ def swap_ureg_in_instance(obj: BaseModel, new_ureg: UnitRegistry, **val_kwargs):
     field_values = obj.model_dump(**val_kwargs)
     updated_field_values = _replace_ureg(field_values)
     return obj.__class__.model_validate(updated_field_values, **val_kwargs)
+
+
+class Band(BaseModelWithUnits):
+    """Band metadata.
+
+    Attributes
+    ----------
+    index
+        Index within a datacube associated with the band (0-indexed).
+    wavelength
+        Nominal wavelength associated with the Fabry-Perot Interferometer position.
+    scale
+        Scale to convert stored pixel values to radiance.
+    offset
+        Offset to convert stored pixel values to radiance.
+    """
+
+    index: int
+    wavelength: Quantity
+
+    scale: float = 1.0
+    offset: float = 0.0
+
+    _check_wl_distance = field_validator("wavelength", mode="before")(
+        must_be_positive_distance
+    )
+    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
+
+    @field_serializer("wavelength", when_used="json")
+    def _serialize_quantity(self, q: Quantity):
+        return serialize_quantity(q)
+
+
+class Image(BaseModelWithUnits):
+    """Hyperspectral image metadata containing bands
+
+    Attributes
+    ----------
+    bands
+        _description_
+    local_solar_zenith_angle
+        Solar zenith angle of the image area
+    local_solar_azimuth_angle
+        Solar azimuth angle of the image area
+    local_viewing_angle
+        The angle between the satellite's pointing direction and nadir.
+    acquired_on
+        Time of image acquisition
+    source_images
+        List of database IDs of images this L1 product image has been stitched from
+    measured_quantity_name
+        Name of pixel value unit
+    measured_quantity_unit
+        Unit of pixel values
+    cloud_cover_percentage
+        The cloud cover percentage
+    footprint
+        Shapely polygon describing an estimated footprint of the satellite
+    epsg
+        EPSG code of the image coordinate reference system
+    shape
+        Shape of the image (height, width)
+    gsd
+        Ground sample distance (height, width or row, col) using projection unit in
+        CRS `epsg`.
+    transform
+        Affine transformation mapping pixel coordinates to coordinates in the CRS
+        `epsg`.
+    """
+
+    local_solar_zenith_angle: Quantity
+    local_solar_azimuth_angle: Quantity
+    local_viewing_angle: Quantity
+    acquired_on: datetime
+    source_images: list[UUID4]
+    measured_quantity_name: str
+    measured_quantity_unit: str
+    cloud_cover_percentage: float | None
+    footprint: CRSGeometry | None = None
+    epsg: int | None = None
+    shape: tuple[int, int] | None = None  # (height, width)
+    gsd: tuple[float, float] | None = None  # Ground sample distance
+    transform: Affine | None = None
+
+    _check_angle = field_validator(
+        "local_solar_zenith_angle",
+        "local_solar_azimuth_angle",
+        "local_viewing_angle",
+        mode="before",
+    )(must_be_angle)
+    _parse_timestamp = field_validator("acquired_on", mode="before")(parse_date)
+    _check_tz = field_validator("acquired_on")(check_is_utc_datetime)
+    _parse_geom = field_validator("footprint", mode="before")(parse_crs_geometry)
+
+    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
+
+    @field_serializer(
+        "local_solar_zenith_angle",
+        "local_solar_azimuth_angle",
+        "local_viewing_angle",
+        when_used="json",
+    )
+    def _serialize_quantity(self, q: Quantity):
+        return serialize_quantity(q)
+
+    @field_serializer("footprint")
+    def _serialize_CRSGeometry(self, p: CRSGeometry | None):
+        return serialize_CRSGeometry(p)
+
+    @field_serializer("epsg")
+    def _serialize_epsg(self, epsg: int | None, info: SerializationInfo) -> int:
+        # Don't use the passed field because we get the epsg from the image
+        return serialize_rio_metadata(info, "epsg")
+
+    @field_serializer("shape")
+    def _serialize_shape(
+        self, shape: tuple[int, int] | None, info: SerializationInfo
+    ) -> tuple[int, int] | None:
+        # Don't use the passed field because we get the shape from the image
+        return serialize_rio_metadata(info, "shape")
+
+    @field_serializer("gsd")
+    def _serialize_gsd(
+        self, gsd: tuple[float, float] | None, info: SerializationInfo
+    ) -> tuple[float, float] | None:
+        # Don't use the passed field because we get the gsd from the image
+        return (
+            serialize_rio_metadata(info, "gsd_h"),
+            serialize_rio_metadata(info, "gsd_w"),
+        )
+
+    @field_serializer("transform")
+    def _serialize_geotransform(
+        self, transform: Affine | None, info: SerializationInfo
+    ) -> Affine | None:
+        # Don't use the passed field because we get the transform from the image
+        return serialize_rio_metadata(info, "transform")
