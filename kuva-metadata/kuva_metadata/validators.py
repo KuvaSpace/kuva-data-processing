@@ -5,7 +5,7 @@ This let know Pydantic how to take of types such as shapely.geometry or quaterni
 
 from datetime import datetime
 from typing import cast
-from zoneinfo import ZoneInfo
+from uuid import UUID
 
 import numpy as np
 import shapely
@@ -20,11 +20,40 @@ from .helper_types import Polygon_, Quantity_, array_3x3_, quaternion_
 from .utils import default_ureg
 
 
-def parse_crs_geometry(geom: CRSGeometry | dict[str, str | int]) -> CRSGeometry:
+def parse_camera_radiometric_ids(d: dict[str, str]) -> dict[str, UUID]:
+    """Parse the camera_radiometric_ids dict to convert string UUIDs to UUID objects."""
+    return {k: parse_uuid(v) for k, v in d.items()}
+
+
+def parse_uuid(_uuid: str | UUID) -> UUID:
+    """Parse a UUID"""
+    if isinstance(_uuid, UUID):
+        return _uuid
+    return UUID(_uuid)
+
+
+def parse_crs_geometry(
+    geom: CRSGeometry | dict[str, str | int] | None,
+) -> CRSGeometry | None:
     """Parses shapely geometries with an associated CRS"""
+    if geom is None:
+        return None
+
     if isinstance(geom, dict):
+        # Backwards compatibility
+        if "geom" in geom:
+            geometry_key = "geom"
+        else:
+            geometry_key = "geometry"
+        # Backwards compatibility
+        if "crs_epsg" in geom:
+            crs_key = "crs_epsg"
+        else:
+            crs_key = "footprint_epsg"
+
         crs_geometry = CRSGeometry(
-            geom=from_wkt(geom["geom"]), crs_epsg=CRS.from_epsg(geom["crs_epsg"])
+            geom=from_wkt(geom[geometry_key]),
+            crs_epsg=CRS.from_epsg(geom[crs_key]),
         )
     elif isinstance(geom, CRSGeometry):
         crs_geometry = geom
