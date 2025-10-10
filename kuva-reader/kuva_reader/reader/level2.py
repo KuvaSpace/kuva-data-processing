@@ -47,7 +47,7 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
-        self.image = cast(
+        self._image = cast(
             rio.DatasetReader,
             rio.open(self.image_path / "L2A.tif"),
         )
@@ -69,6 +69,12 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
             )
         else:
             return f"{self.__class__.__name__} loaded from '{self.image_path}'"
+
+    @property
+    def image(self) -> rio.DatasetReader:
+        if self._image is None:
+            raise RuntimeError("Images has been released.")
+        return self._image
 
     def footprint(self, crs="") -> Polygon:
         """The product footprint as a Shapely polygon."""
@@ -108,9 +114,11 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of
         the `image` variable.
         """
-        self.image.close()
-        del self.image
-        self.image = None
+        if self._image is not None:
+            self._image.close()
+            del self._image
+            self._image = None
+
     def generate_metadata_file(self) -> None:
         """Write the sidecar files next to the product."""
         metadata_file_name = self.image_path.name + ".json"
