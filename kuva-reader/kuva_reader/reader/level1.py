@@ -141,6 +141,31 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             del self._image
             self._image = None
 
+    def generate_metadata_file(self) -> None:
+        """Write the sidecar files next to the product."""
+        metadata_file_name = self.image_path.name + ".json"
+
+        with rio.open(self.image_path / "L1B.tif") as src:
+            shape = (src.height, src.width)
+            crs_epsg = src.crs.to_epsg()
+            geotransform = src.transform
+            gsd_w, gsd_h = src.res
+
+
+        with (self.image_path / metadata_file_name).open("w") as fh:
+            fh.write(
+                self.metadata.model_dump_json(
+                    indent=2,
+                    context={
+                        "shape": shape,
+                        "epsg": crs_epsg,
+                        "transform": geotransform,
+                        "gsd_w": gsd_w,
+                        "gsd_h": gsd_h,
+                    },
+                )
+            )
+
 
 class Level1CProduct(ProductBase[MetadataLevel1C]):
     """
@@ -249,6 +274,31 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
             self._image.close()
             del self._image
             self._image = None
+
+    def generate_metadata_file(self) -> None:
+        """Write the sidecar files next to the product."""
+        metadata_file_name = self.image_path.name + ".json"
+
+        with rio.open(self.image_path / "L1C.tif") as src:
+            shape = (src.height, src.width)
+            crs_epsg = src.crs.to_epsg()
+            geotransform = src.transform
+            gsd_w, gsd_h = src.res
+
+
+        with (self.image_path / metadata_file_name).open("w") as fh:
+            fh.write(
+                self.metadata.model_dump_json(
+                    indent=2,
+                    context={
+                        "shape": shape,
+                        "epsg": crs_epsg,
+                        "transform": geotransform,
+                        "gsd_w": gsd_w,
+                        "gsd_h": gsd_h,
+                    },
+                )
+            )
 
 
 def generate_level_1_metafile():

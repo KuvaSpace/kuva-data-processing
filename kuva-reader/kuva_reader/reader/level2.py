@@ -111,6 +111,30 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
         self.image.close()
         del self.image
         self.image = None
+    def generate_metadata_file(self) -> None:
+        """Write the sidecar files next to the product."""
+        metadata_file_name = self.image_path.name + ".json"
+
+        with rio.open(self.image_path / "L2A.tif") as src:
+            shape = (src.height, src.width)
+            crs_epsg = src.crs.to_epsg()
+            geotransform = src.transform
+            gsd_w, gsd_h = src.res
+
+
+        with (self.image_path / metadata_file_name).open("w") as fh:
+            fh.write(
+                self.metadata.model_dump_json(
+                    indent=2,
+                    context={
+                        "shape": shape,
+                        "epsg": crs_epsg,
+                        "transform": geotransform,
+                        "gsd_w": gsd_w,
+                        "gsd_h": gsd_h,
+                    },
+                )
+            )
 
 
 def generate_level_2_metafile():
