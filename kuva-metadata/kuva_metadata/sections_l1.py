@@ -30,6 +30,10 @@ class BandL1AB(Band):
     toa_radiance_to_reflectance_factor
         Factor to convert from top-of-atmosphere radiance to reflectance.
         Example: reflectance = radiance * toa_radiance_to_reflectance_factor
+    zenith_viewing_angle
+        Zenith viewing angle of the central pixel of the band.
+    azimuth_viewing_angle
+        Azimuth viewing angle of the central pixel of the band.
     """
 
     toa_radiance_to_reflectance_factor: float = 1.0
@@ -51,6 +55,10 @@ class BandL1C(Band):
     toa_radiance_to_reflectance_factor
         Factor to convert from top-of-atmosphere radiance to reflectance.
         Example: reflectance = radiance * toa_radiance_to_reflectance_factor
+    zenith_viewing_angle
+        Zenith viewing angle of the central pixel of the band.
+    azimuth_viewing_angle
+        Azimuth viewing angle of the central pixel of the band.
     """
 
     toa_radiance_to_reflectance_factor: float = 1.0
