@@ -16,6 +16,28 @@ from kuva_metadata.sections_l1 import (  # noqa # pylint: disable=unused-import
 )
 
 
+class BandL2A(Band):
+    """Band metadata.
+
+    Attributes
+    ----------
+    index
+        Index within a datacube associated with the band (0-indexed).
+    wavelength
+        Nominal wavelength associated with the Fabry-Perot Interferometer position.
+    scale
+        Scale to convert stored pixel values to radiance.
+    offset
+        Offset to convert stored pixel values to radiance.
+    """
+
+    pass
+
+
+class ImageL2A(Image):
+    bands: list[BandL2A]
+
+
 class MetadataLevel2A(MetadataBase):
     """Metadata for Level-2A products
 
@@ -27,6 +49,6 @@ class MetadataLevel2A(MetadataBase):
         Rational polynomial function coefficients for product orthorectification
     """
 
-    image: Image
+    image: ImageL2A
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)

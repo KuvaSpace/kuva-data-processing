@@ -5,8 +5,10 @@ from typing import Any
 
 import networkx as nx
 import numpy as np
+import shapely
 from networkx.readwrite import json_graph
 from pint import Quantity
+from pydantic import SerializationInfo
 from quaternion import quaternion
 from rasterio.rpc import RPC
 
@@ -40,9 +42,35 @@ def serialize_RPCs(rpcs: RPC | None) -> dict | None:
     return rpcs.to_dict() if rpcs is not None else None
 
 
-def serialize_CRSGeometry(p: CRSGeometry) -> dict[str, Any]:
-    """Serialize geometries with associated CRS"""
-    return {"geom": p.geom.wkt, "crs_epsg": p.crs_epsg.to_epsg()}
+def serialize_rio_metadata(info: SerializationInfo | None, key: str) -> Any:
+    """Serialize rasterio metadata that is passed through SerializationInfo context"""
+    if info is None or info.context is None:
+        e_ = "Serialization context wasn't available when serializing rio metadata."
+        raise ValueError(e_)
+
+    return info.context[key]
+
+
+def serialize_camera_radiometric_ids(
+    camera_radiometric_ids: dict[str, Any],
+) -> dict[str, str]:
+    """Serialize the camera_radiometric_ids dict to convert UUID4 values to strings."""
+    return {
+        camera: str(radiometric_id)
+        for camera, radiometric_id in camera_radiometric_ids.items()
+    }
+
+
+def serialize_CRSGeometry(p: CRSGeometry | None) -> dict | None:
+    """Serialize geometries with associated CRS and bbox"""
+    if p is None:
+        return None
+
+    return {
+        "footprint_epsg": p.crs_epsg.to_epsg(),
+        "geometry": shapely.to_wkt(p.geom, rounding_precision=-1), # full precision
+        "bbox": p.geom.bounds,
+    }
 
 
 def serialize_graph(g: nx.DiGraph | None, context: dict[str, Any]) -> str | None:
@@ -54,7 +82,7 @@ def serialize_graph(g: nx.DiGraph | None, context: dict[str, Any]) -> str | None
     image_path = context["image_path"]
     graph_json_file_name = context["graph_json_file_name"]
 
-    with (image_path / graph_json_file_name).open('w') as fh:
+    with (image_path / graph_json_file_name).open("w") as fh:
         fh.write(out)
 
     return graph_json_file_name
