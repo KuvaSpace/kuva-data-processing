@@ -3,7 +3,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Any, cast
+from typing import Annotated, Any, Optional, cast
 
 import networkx as nx
 import numpy as np
@@ -350,6 +350,12 @@ class Frame(BaseModelWithUnits):
     position
         ECEF geodetic coordinates (estimated from telemetry) of the position of the
         spacecraft in at the start of frame acquisition (SRID=4978).
+    zenith_viewing_angle
+        Represents the satellite's elevation angle in degrees above the horizon
+        as seen from the ground target.
+    azimuth_viewing_angle
+        Represents the satellite's horizontal direction in degrees from the
+        ground target, measured clockwise from north.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]
@@ -358,6 +364,8 @@ class Frame(BaseModelWithUnits):
     integration_time: Quantity
     sat_ecef_orientation: quaternion
     position: CRSGeometry
+    zenith_viewing_angle: Optional[Quantity] = Field(default=None)
+    azimuth_viewing_angle: Optional[Quantity] = Field(default=None)
 
     _check_int_time = field_validator("integration_time", mode="before")(
         must_be_positive_time
@@ -372,6 +380,10 @@ class Frame(BaseModelWithUnits):
         check_is_utc_datetime
     )
     _parse_geom = field_validator("position", mode="before")(parse_crs_geometry)
+
+    _check_zenith_angle = field_validator("zenith_viewing_angle", mode="before")(must_be_angle)
+    _check_azimuth_angle = field_validator("azimuth_viewing_angle", mode="before")(must_be_angle)
+
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
     def footprint(self, camera: Camera) -> Polygon:
@@ -396,6 +408,14 @@ class Frame(BaseModelWithUnits):
     @field_serializer("position")
     def _serialize_CRSGeometry(self, p: CRSGeometry):
         return serialize_CRSGeometry(p)
+
+    @field_serializer("zenith_viewing_angle", when_used="json")
+    def _serialize_zenith_angle(self, q: Quantity | None):
+        return serialize_quantity(q)
+
+    @field_serializer("azimuth_viewing_angle", when_used="json")
+    def _serialize_azimuth_angle(self, q: Quantity | None):
+        return serialize_quantity(q)
 
 
 class Band(BaseModelWithUnits):
