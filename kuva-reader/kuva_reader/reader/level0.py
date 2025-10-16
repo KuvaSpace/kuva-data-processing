@@ -66,6 +66,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
                 rio.DatasetReader,
                 rio.open(
                     self.image_path / (cube.camera.name + ".tif"),
+                    num_threads='16',
                 ),
             )
             for camera, cube in self.metadata.image.data_cubes.items()  # type: ignore

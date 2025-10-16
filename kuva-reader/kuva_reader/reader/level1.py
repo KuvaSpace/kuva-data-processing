@@ -52,7 +52,7 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
 
         self._image = cast(
             rio.DatasetReader,
-            rio.open(self.image_path / "L1B.tif"),
+            rio.open(self.image_path / "L1B.tif", num_threads='16'),
         )
 
         self.data_tags = self.image.tags()
@@ -205,7 +205,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
 
         self._image = cast(
             rio.DatasetReader,
-            rio.open(self.image_path / "L1C.tif"),
+            rio.open(self.image_path / "L1C.tif", num_threads='16'),
         )
         self.data_tags = self.image.tags()
 
