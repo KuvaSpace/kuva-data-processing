@@ -120,7 +120,7 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         ]
 
         if convert_to_reflectance:
-            if self.data_tags.get("data_name") == "TOA_RADIANCE":
+            if self.metadata.image.measured_quantity_name == "TOA_RADIANCE":
                 coeffs = np.array(
                     [
                         band.toa_radiance_to_reflectance_factor
@@ -288,7 +288,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
         ]
 
         if convert_to_radiance:
-            if self.data_tags.get("data_name") == "TOA_REFLECTANCE":
+            if self.metadata.image.measured_quantity_name == "TOA_REFLECTANCE":
                 coeffs = np.array(
                     [
                         band.toa_radiance_to_reflectance_factor
@@ -303,7 +303,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
             else:
                 e_ = (
                     "Can only convert `TOA_REFLECTANCE` to `TOA_RADIANCE`. The measured"
-                    f" unit is `{self.data_tags.get('data_name', 'UNKNOWN')}`."
+                    f" unit is `{self.metadata.image.measured_quantity_name}`."
                 )
                 raise ValueError(e_)
 
