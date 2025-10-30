@@ -251,6 +251,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
         image_path: Path,
         metadata: MetadataLevel1C | None = None,
         target_ureg: UnitRegistry | None = None,
+        convert_to_radiance: bool = False,
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
@@ -258,12 +259,32 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
             rio.DatasetReader,
             rio.open(self.image_path / "L1C.tif", num_threads=NUM_THREADS),
         )
-        self.data_tags = self.image.tags()
+        self.data_tags = self._image.tags()
+        self.crs = self._image.crs
 
         self.wavelengths = [
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
-        self.crs = self.image.crs
+
+        if convert_to_radiance:
+            if self.data_tags.get("data_name") == "TOA_REFLECTANCE":
+                coeffs = np.array(
+                    [
+                        band.toa_radiance_to_reflectance_factor
+                        for band in self.metadata.image.bands
+                    ]
+                )
+                _validate_coefficients(coeffs, self._image.count)
+
+                data = self._image.read() / coeffs[:, np.newaxis, np.newaxis]
+                self._image.close()
+                self._image = _create_in_memory_dataset(self._image, data)
+            else:
+                e_ = (
+                    "Can only convert `TOA_REFLECTANCE` to `TOA_RADIANCE`. The measured"
+                    f" unit is `{self.data_tags.get('data_name', 'UNKNOWN')}`."
+                )
+                raise ValueError(e_)
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
