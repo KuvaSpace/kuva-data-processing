@@ -13,27 +13,44 @@ from kuva_reader import image_footprint
 from .product_base import NUM_THREADS, ProductBase
 
 
-def _create_in_memory_dataset(image, data):
+def _validate_in_memory_dataset(original_ds, new_ds):
+    """Validate the properties of the new in-memory dataset against the original
+    image."""
+    errors = []
+    if new_ds.driver != original_ds.driver:
+        errors.append(f"Driver mismatch: {new_ds.driver} != {original_ds.driver}")
+    if new_ds.count != original_ds.count:
+        errors.append(f"Band count mismatch: {new_ds.count} != {original_ds.count}")
+    if new_ds.width != original_ds.width:
+        errors.append(f"Width mismatch: {new_ds.width} != {original_ds.width}")
+    if new_ds.height != original_ds.height:
+        errors.append(f"Height mismatch: {new_ds.height} != {original_ds.height}")
+    if new_ds.crs != original_ds.crs:
+        errors.append(f"CRS mismatch: {new_ds.crs} != {original_ds.crs}")
+    if new_ds.transform != original_ds.transform:
+        errors.append(
+            f"Transform mismatch: {new_ds.transform} != {original_ds.transform}"
+        )
+    if errors:
+        raise ValueError("In-memory dataset validation failed:\n" + "\n".join(errors))
+
+
+def _create_in_memory_dataset(original_ds, data):
     """Helper function to create an in-memory dataset with modified data."""
     new_dataset = MemoryFile().open(
-        driver=image.driver,
-        height=image.height,
-        width=image.width,
-        count=image.count,
+        driver=original_ds.driver,
+        height=original_ds.height,
+        width=original_ds.width,
+        count=original_ds.count,
         dtype=data.dtype,
-        crs=image.crs,
-        transform=image.transform,
+        crs=original_ds.crs,
+        transform=original_ds.transform,
         num_threads=NUM_THREADS,
     )
     new_dataset.write(data)
 
-    # Validate the new dataset properties
-    assert new_dataset.driver == image.driver
-    assert new_dataset.count == image.count
-    assert new_dataset.width == image.width
-    assert new_dataset.height == image.height
-    assert new_dataset.crs == image.crs
-    assert new_dataset.transform == image.transform
+    # Probably redundant, but doesn't hurt to check anyway
+    _validate_in_memory_dataset(original_ds, new_dataset)
 
     return new_dataset
 
