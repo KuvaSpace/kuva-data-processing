@@ -73,7 +73,8 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
     @property
     def image(self) -> rio.DatasetReader:
         if self._image is None:
-            raise RuntimeError("Images has been released.")
+            e_ = "Image has been released. Re-open the product to access it again."
+            raise RuntimeError(e_)
         return self._image
 
     def footprint(self, crs="") -> Polygon:

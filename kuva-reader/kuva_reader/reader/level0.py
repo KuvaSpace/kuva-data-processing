@@ -101,7 +101,8 @@ class Level0Product(ProductBase[MetadataLevel0]):
     @property
     def images(self) -> dict[str, rio.DatasetReader]:
         if self._images is None:
-            raise RuntimeError("Images has been released.")
+            e_ = "Images have been released. Re-open the product to access it again."
+            raise RuntimeError(e_)
         return self._images
 
     def keys(self) -> list[str]:

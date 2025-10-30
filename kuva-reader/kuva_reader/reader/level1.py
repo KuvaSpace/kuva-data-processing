@@ -127,7 +127,8 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
     @property
     def image(self) -> rio.DatasetReader:
         if self._image is None:
-            raise RuntimeError("Images has been released.")
+            e_ = "Image has been released. Re-open the product to access it again."
+            raise RuntimeError(e_)
         return self._image
 
     def footprint(self, crs="") -> Polygon:
@@ -201,7 +202,6 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             crs_epsg = src.crs.to_epsg()
             geotransform = src.transform
             gsd_w, gsd_h = src.res
-
 
         with (self.image_path / metadata_file_name).open("w") as fh:
             fh.write(
@@ -301,7 +301,8 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
     @property
     def image(self) -> rio.DatasetReader:
         if self._image is None:
-            raise RuntimeError("Images has been released.")
+            e_ = "Image has been released. Re-open the product to access it again."
+            raise RuntimeError(e_)
         return self._image
 
     def footprint(self, crs="") -> Polygon:
@@ -356,7 +357,6 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
             crs_epsg = src.crs.to_epsg()
             geotransform = src.transform
             gsd_w, gsd_h = src.res
-
 
         with (self.image_path / metadata_file_name).open("w") as fh:
             fh.write(
