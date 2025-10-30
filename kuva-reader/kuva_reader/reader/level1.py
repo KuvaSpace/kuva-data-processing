@@ -1,14 +1,50 @@
 from pathlib import Path
 from typing import cast
 
+import numpy as np
 import rasterio as rio
 from kuva_metadata import MetadataLevel1AB, MetadataLevel1C
 from pint import UnitRegistry
+from rasterio.io import MemoryFile
 from shapely import Polygon
 
 from kuva_reader import image_footprint
 
 from .product_base import NUM_THREADS, ProductBase
+
+
+def _create_in_memory_dataset(image, data):
+    """Helper function to create an in-memory dataset with modified data."""
+    new_dataset = MemoryFile().open(
+        driver=image.driver,
+        height=image.height,
+        width=image.width,
+        count=image.count,
+        dtype=data.dtype,
+        crs=image.crs,
+        transform=image.transform,
+        num_threads=NUM_THREADS,
+    )
+    new_dataset.write(data)
+
+    # Validate the new dataset properties
+    assert new_dataset.driver == image.driver
+    assert new_dataset.count == image.count
+    assert new_dataset.width == image.width
+    assert new_dataset.height == image.height
+    assert new_dataset.crs == image.crs
+    assert new_dataset.transform == image.transform
+
+    return new_dataset
+
+
+def _validate_coefficients(coeffs, image_bands_count):
+    """Validate that the coefficients array matches the number of image bands."""
+    if coeffs.shape[0] != image_bands_count:
+        raise ValueError(
+            f"Mismatch between coefficients ({coeffs.shape[0]}) and image "
+            f"bands ({image_bands_count})."
+        )
 
 
 class Level1ABProduct(ProductBase[MetadataLevel1AB]):
@@ -47,6 +83,7 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         image_path: Path,
         metadata: MetadataLevel1AB | None = None,
         target_ureg: UnitRegistry | None = None,
+        convert_to_reflectance: bool = True,
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
@@ -54,12 +91,26 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             rio.DatasetReader,
             rio.open(self.image_path / "L1B.tif", num_threads=NUM_THREADS),
         )
+        self.crs = self._image.crs
+        self.data_tags = self._image.tags()
 
-        self.data_tags = self.image.tags()
         self.wavelengths = [
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
-        self.crs = self.image.crs
+
+        if convert_to_reflectance:
+            if self.data_tags.get("data_name") == "TOA_RADIANCE":
+                coeffs = np.array(
+                    [
+                        band.toa_radiance_to_reflectance_factor
+                        for band in self.metadata.image.bands
+                    ]
+                )
+                _validate_coefficients(coeffs, self._image.count)
+
+                data = self._image.read() * coeffs[:, np.newaxis, np.newaxis]
+                self._image.close()
+                self._image = _create_in_memory_dataset(self._image, data)
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
