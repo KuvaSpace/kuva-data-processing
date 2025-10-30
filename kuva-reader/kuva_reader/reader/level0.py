@@ -9,7 +9,7 @@ from shapely import Polygon
 
 from kuva_reader import image_footprint
 
-from .product_base import ProductBase
+from .product_base import NUM_THREADS, ProductBase
 
 
 class Level0Product(ProductBase[MetadataLevel0]):
@@ -66,7 +66,7 @@ class Level0Product(ProductBase[MetadataLevel0]):
                 rio.DatasetReader,
                 rio.open(
                     self.image_path / (cube.camera.name + ".tif"),
-                    num_threads='16',
+                    num_threads=NUM_THREADS,
                 ),
             )
             for camera, cube in self.metadata.image.data_cubes.items()  # type: ignore

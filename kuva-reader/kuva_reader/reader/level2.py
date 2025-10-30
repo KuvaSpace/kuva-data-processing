@@ -8,7 +8,7 @@ from shapely import Polygon
 
 from kuva_reader import image_footprint
 
-from .product_base import ProductBase
+from .product_base import NUM_THREADS, ProductBase
 
 
 class Level2AProduct(ProductBase[MetadataLevel2A]):
@@ -49,7 +49,7 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
 
         self._image = cast(
             rio.DatasetReader,
-            rio.open(self.image_path / "L2A.tif", num_threads='16'),
+            rio.open(self.image_path / "L2A.tif", num_threads=NUM_THREADS),
         )
         self.data_tags = self.image.tags()
 
