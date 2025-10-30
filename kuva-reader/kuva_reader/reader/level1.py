@@ -39,12 +39,16 @@ def _create_in_memory_dataset(image, data):
 
 
 def _validate_coefficients(coeffs, image_bands_count):
-    """Validate that the coefficients array matches the number of image bands."""
+    """Validate that the coefficients array matches the number of image bands and
+    contains no zero values."""
     if coeffs.shape[0] != image_bands_count:
         raise ValueError(
             f"Mismatch between coefficients ({coeffs.shape[0]}) and image "
             f"bands ({image_bands_count})."
         )
+    if np.any(coeffs == 0):
+        e_ = "Coefficients contain zero values, which are not allowed."
+        raise ValueError(e_)
 
 
 class Level1ABProduct(ProductBase[MetadataLevel1AB]):
