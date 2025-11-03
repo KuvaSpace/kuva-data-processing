@@ -8,7 +8,7 @@ from shapely import Polygon
 
 from kuva_reader import image_footprint
 
-from .product_base import ProductBase
+from .product_base import NUM_THREADS, ProductBase
 
 
 class Level2AProduct(ProductBase[MetadataLevel2A]):
@@ -49,7 +49,7 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
 
         self._image = cast(
             rio.DatasetReader,
-            rio.open(self.image_path / "L2A.tif", num_threads='16'),
+            rio.open(self.image_path / "L2A.tif", num_threads=NUM_THREADS),
         )
         self.data_tags = self.image.tags()
 
@@ -73,7 +73,8 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
     @property
     def image(self) -> rio.DatasetReader:
         if self._image is None:
-            raise RuntimeError("Images has been released.")
+            e_ = "Image has been released. Re-open the product to access it again."
+            raise RuntimeError(e_)
         return self._image
 
     def footprint(self, crs="") -> Polygon:

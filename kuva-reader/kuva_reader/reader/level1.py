@@ -1,14 +1,71 @@
 from pathlib import Path
 from typing import cast
 
+import numpy as np
 import rasterio as rio
 from kuva_metadata import MetadataLevel1AB, MetadataLevel1C
 from pint import UnitRegistry
+from rasterio.io import MemoryFile
 from shapely import Polygon
 
 from kuva_reader import image_footprint
 
-from .product_base import ProductBase
+from .product_base import NUM_THREADS, ProductBase
+
+
+def _validate_in_memory_dataset(original_ds, new_ds):
+    """Validate the properties of the new in-memory dataset against the original
+    image."""
+    errors = []
+    if new_ds.driver != original_ds.driver:
+        errors.append(f"Driver mismatch: {new_ds.driver} != {original_ds.driver}")
+    if new_ds.count != original_ds.count:
+        errors.append(f"Band count mismatch: {new_ds.count} != {original_ds.count}")
+    if new_ds.width != original_ds.width:
+        errors.append(f"Width mismatch: {new_ds.width} != {original_ds.width}")
+    if new_ds.height != original_ds.height:
+        errors.append(f"Height mismatch: {new_ds.height} != {original_ds.height}")
+    if new_ds.crs != original_ds.crs:
+        errors.append(f"CRS mismatch: {new_ds.crs} != {original_ds.crs}")
+    if new_ds.transform != original_ds.transform:
+        errors.append(
+            f"Transform mismatch: {new_ds.transform} != {original_ds.transform}"
+        )
+    if errors:
+        raise ValueError("In-memory dataset validation failed:\n" + "\n".join(errors))
+
+
+def _create_in_memory_dataset(original_ds, data):
+    """Helper function to create an in-memory dataset with modified data."""
+    new_dataset = MemoryFile().open(
+        driver=original_ds.driver,
+        height=original_ds.height,
+        width=original_ds.width,
+        count=original_ds.count,
+        dtype=data.dtype,
+        crs=original_ds.crs,
+        transform=original_ds.transform,
+        num_threads=NUM_THREADS,
+    )
+    new_dataset.write(data)
+
+    # Probably redundant, but doesn't hurt to check anyway
+    _validate_in_memory_dataset(original_ds, new_dataset)
+
+    return new_dataset
+
+
+def _validate_coefficients(coeffs, image_bands_count):
+    """Validate that the coefficients array matches the number of image bands and
+    contains no zero values."""
+    if coeffs.shape[0] != image_bands_count:
+        raise ValueError(
+            f"Mismatch between coefficients ({coeffs.shape[0]}) and image "
+            f"bands ({image_bands_count})."
+        )
+    if np.any(coeffs == 0):
+        e_ = "Coefficients contain zero values, which are not allowed."
+        raise ValueError(e_)
 
 
 class Level1ABProduct(ProductBase[MetadataLevel1AB]):
@@ -47,19 +104,34 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         image_path: Path,
         metadata: MetadataLevel1AB | None = None,
         target_ureg: UnitRegistry | None = None,
+        convert_to_reflectance: bool = True,
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
         self._image = cast(
             rio.DatasetReader,
-            rio.open(self.image_path / "L1B.tif", num_threads='16'),
+            rio.open(self.image_path / "L1B.tif", num_threads=NUM_THREADS),
         )
+        self.crs = self._image.crs
+        self.data_tags = self._image.tags()
 
-        self.data_tags = self.image.tags()
         self.wavelengths = [
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
-        self.crs = self.image.crs
+
+        if convert_to_reflectance:
+            if self.metadata.image.measured_quantity_name == "TOA_RADIANCE":
+                coeffs = np.array(
+                    [
+                        band.toa_radiance_to_reflectance_factor
+                        for band in self.metadata.image.bands
+                    ]
+                )
+                _validate_coefficients(coeffs, self._image.count)
+
+                data = self._image.read() * coeffs[:, np.newaxis, np.newaxis]
+                self._image.close()
+                self._image = _create_in_memory_dataset(self._image, data)
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
@@ -76,7 +148,8 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
     @property
     def image(self) -> rio.DatasetReader:
         if self._image is None:
-            raise RuntimeError("Images has been released.")
+            e_ = "Image has been released. Re-open the product to access it again."
+            raise RuntimeError(e_)
         return self._image
 
     def footprint(self, crs="") -> Polygon:
@@ -151,7 +224,6 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             geotransform = src.transform
             gsd_w, gsd_h = src.res
 
-
         with (self.image_path / metadata_file_name).open("w") as fh:
             fh.write(
                 self.metadata.model_dump_json(
@@ -200,19 +272,40 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
         image_path: Path,
         metadata: MetadataLevel1C | None = None,
         target_ureg: UnitRegistry | None = None,
+        convert_to_radiance: bool = False,
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
         self._image = cast(
             rio.DatasetReader,
-            rio.open(self.image_path / "L1C.tif", num_threads='16'),
+            rio.open(self.image_path / "L1C.tif", num_threads=NUM_THREADS),
         )
-        self.data_tags = self.image.tags()
+        self.data_tags = self._image.tags()
+        self.crs = self._image.crs
 
         self.wavelengths = [
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
-        self.crs = self.image.crs
+
+        if convert_to_radiance:
+            if self.metadata.image.measured_quantity_name == "TOA_REFLECTANCE":
+                coeffs = np.array(
+                    [
+                        band.toa_radiance_to_reflectance_factor
+                        for band in self.metadata.image.bands
+                    ]
+                )
+                _validate_coefficients(coeffs, self._image.count)
+
+                data = self._image.read() / coeffs[:, np.newaxis, np.newaxis]
+                self._image.close()
+                self._image = _create_in_memory_dataset(self._image, data)
+            else:
+                e_ = (
+                    "Can only convert `TOA_REFLECTANCE` to `TOA_RADIANCE`. The measured"
+                    f" unit is `{self.metadata.image.measured_quantity_name}`."
+                )
+                raise ValueError(e_)
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
@@ -229,7 +322,8 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
     @property
     def image(self) -> rio.DatasetReader:
         if self._image is None:
-            raise RuntimeError("Images has been released.")
+            e_ = "Image has been released. Re-open the product to access it again."
+            raise RuntimeError(e_)
         return self._image
 
     def footprint(self, crs="") -> Polygon:
@@ -284,7 +378,6 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
             crs_epsg = src.crs.to_epsg()
             geotransform = src.transform
             gsd_w, gsd_h = src.res
-
 
         with (self.image_path / metadata_file_name).open("w") as fh:
             fh.write(
