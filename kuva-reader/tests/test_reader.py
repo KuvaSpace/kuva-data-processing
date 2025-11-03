@@ -29,7 +29,7 @@ L2A_PATH = TEST_DATA_ROOT / "hyperfield1a_L2A_20250310T142413"
 def l1b_product() -> Level1ABProduct:
     """Fetch test L1B product.
 
-    NOTE: This is a cropped version of a Hyperfield-1A L1B cube with few bands (5)
+    NOTE: This is a cropped version of a Hyperfield-1A L1B cube with few bands (3)
     """
     return Level1ABProduct(L1B_REFLECTANCE_PATH)
 
