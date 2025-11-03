@@ -9,6 +9,8 @@ from pydantic import BaseModel
 
 TMetadata = TypeVar("TMetadata", bound=BaseModel)
 
+NUM_THREADS = "16"
+
 
 class ProductBase(Generic[TMetadata], metaclass=ABCMeta):
     """Base class for all Kuva product levels containing the image and all metadata
