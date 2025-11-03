@@ -121,15 +121,18 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
 
         if convert_to_reflectance:
             if self.metadata.image.measured_quantity_name == "TOA_RADIANCE":
+                image_dtype = self._image.profile["dtype"]
                 coeffs = np.array(
                     [
                         band.toa_radiance_to_reflectance_factor
                         for band in self.metadata.image.bands
                     ]
-                )
+                ).astype(np.float32)
                 _validate_coefficients(coeffs, self._image.count)
 
-                data = self._image.read() * coeffs[:, np.newaxis, np.newaxis]
+                data = (self._image.read() * coeffs[:, np.newaxis, np.newaxis]).astype(
+                    image_dtype
+                )
                 self._image.close()
                 self._image = _create_in_memory_dataset(self._image, data)
 
@@ -289,15 +292,18 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
 
         if convert_to_radiance:
             if self.metadata.image.measured_quantity_name == "TOA_REFLECTANCE":
+                image_dtype = self._image.profile["dtype"]
                 coeffs = np.array(
                     [
                         band.toa_radiance_to_reflectance_factor
                         for band in self.metadata.image.bands
                     ]
-                )
+                ).astype(np.float32)
                 _validate_coefficients(coeffs, self._image.count)
 
-                data = self._image.read() / coeffs[:, np.newaxis, np.newaxis]
+                data = (self._image.read() / coeffs[:, np.newaxis, np.newaxis]).astype(
+                    image_dtype
+                )
                 self._image.close()
                 self._image = _create_in_memory_dataset(self._image, data)
             else:
