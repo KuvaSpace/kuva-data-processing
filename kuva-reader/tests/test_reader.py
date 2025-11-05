@@ -106,29 +106,35 @@ def test_read_bad_pixel_mask_l2a(l2a_product: Level2AProduct):
 def test_read_l1b_reflectance_with_conversions():
     """Test L1B (in reflectance) conversions"""
     # Both conversions should work
-    l1b_product_a = Level1ABProduct(L1B_REFLECTANCE_PATH, convert_to_reflectance=False)
+    l1b_product_a = Level1ABProduct(L1B_REFLECTANCE_PATH, convert_to_radiance=False)
     l1b_product_a = l1b_product_a.image.read()
     assert l1b_product_a.shape[0] == 3
 
-    l1b_product_b = Level1ABProduct(L1B_REFLECTANCE_PATH, convert_to_reflectance=True)
+    l1b_product_b = Level1ABProduct(L1B_REFLECTANCE_PATH, convert_to_radiance=True)
     l1b_product_b = l1b_product_b.image.read()
     assert l1b_product_b.shape[0] == 3
-
-    assert np.allclose(l1b_product_a, l1b_product_b, equal_nan=True)
 
 
 def test_read_l1b_radiance_with_conversions():
     """Test L1B (in radiance) conversions"""
-    # Both conversions should work
-    l1b_product_a = Level1ABProduct(L1B_RADIANCE_PATH, convert_to_reflectance=False)
+    # Without conversion should work just fine
+    l1b_product_a = Level1ABProduct(L1B_RADIANCE_PATH, convert_to_radiance=False)
     l1b_product_a = l1b_product_a.image.read()
     assert l1b_product_a.shape[0] == 3
 
-    l1b_product_b = Level1ABProduct(L1B_RADIANCE_PATH, convert_to_reflectance=True)
-    l1b_product_b = l1b_product_b.image.read()
-    assert l1b_product_b.shape[0] == 3
+    # If already in radiance, should raise an error
+    with pytest.raises(ValueError):
+        Level1ABProduct(L1B_RADIANCE_PATH, convert_to_radiance=True)
 
-    assert not np.allclose(l1b_product_a, l1b_product_b, equal_nan=True)
+
+def test_read_l1c_reflectance_with_conversions():
+    """Test L1C (in reflectance) conversions"""
+    # Both conversions should work
+    l1c_product = Level1CProduct(L1C_REFLECTANCE_PATH, convert_to_radiance=False)
+    assert l1c_product.image.read().shape[0] == 5
+
+    l1c_product = Level1CProduct(L1C_REFLECTANCE_PATH, convert_to_radiance=True)
+    assert l1c_product.image.read().shape[0] == 5
 
 
 def test_read_l1c_radiance_with_conversions():
@@ -140,13 +146,3 @@ def test_read_l1c_radiance_with_conversions():
     # If already in radiance, should raise an error
     with pytest.raises(ValueError):
         Level1CProduct(L1C_RADIANCE_PATH, convert_to_radiance=True)
-
-
-def test_read_l1c_reflectance_with_conversions():
-    """Test L1C (in reflectance) conversions"""
-    # Both conversions should work
-    l1c_product = Level1CProduct(L1C_REFLECTANCE_PATH, convert_to_radiance=False)
-    assert l1c_product.image.read().shape[0] == 5
-
-    l1c_product = Level1CProduct(L1C_REFLECTANCE_PATH, convert_to_radiance=True)
-    assert l1c_product.image.read().shape[0] == 5
