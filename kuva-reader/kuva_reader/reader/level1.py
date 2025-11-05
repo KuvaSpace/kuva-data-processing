@@ -13,6 +13,27 @@ from kuva_reader import image_footprint
 from .product_base import NUM_THREADS, ProductBase
 
 
+def _convert_to_radiance(
+    ds: rio.DatasetReader, metadata: MetadataLevel1AB | MetadataLevel1C
+):
+    if metadata.image.measured_quantity_name == "TOA_REFLECTANCE":
+        image_dtype = ds.profile["dtype"]
+        coeffs = np.array(
+            [band.toa_radiance_to_reflectance_factor for band in metadata.image.bands]
+        ).astype(np.float32)
+        _validate_coefficients(coeffs, ds.count)
+
+        data = (ds.read() / coeffs[:, np.newaxis, np.newaxis]).astype(image_dtype)
+        ds.close()
+        return _create_in_memory_dataset(ds, data)
+    else:
+        e_ = (
+            "Can only convert `TOA_REFLECTANCE` to `TOA_RADIANCE`. The measured"
+            f" unit is `{metadata.image.measured_quantity_name}`."
+        )
+        raise ValueError(e_)
+
+
 def _validate_in_memory_dataset(original_ds, new_ds):
     """Validate the properties of the new in-memory dataset against the original
     image."""
@@ -104,7 +125,7 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         image_path: Path,
         metadata: MetadataLevel1AB | None = None,
         target_ureg: UnitRegistry | None = None,
-        convert_to_reflectance: bool = True,
+        convert_to_radiance: bool = False,
     ) -> None:
         super().__init__(image_path, metadata, target_ureg)
 
@@ -119,22 +140,8 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
             b.wavelength.to("nm").magnitude for b in self.metadata.image.bands
         ]
 
-        if convert_to_reflectance:
-            if self.metadata.image.measured_quantity_name == "TOA_RADIANCE":
-                image_dtype = self._image.profile["dtype"]
-                coeffs = np.array(
-                    [
-                        band.toa_radiance_to_reflectance_factor
-                        for band in self.metadata.image.bands
-                    ]
-                ).astype(np.float32)
-                _validate_coefficients(coeffs, self._image.count)
-
-                data = (self._image.read() * coeffs[:, np.newaxis, np.newaxis]).astype(
-                    image_dtype
-                )
-                self._image.close()
-                self._image = _create_in_memory_dataset(self._image, data)
+        if convert_to_radiance:
+            self._image = _convert_to_radiance(self._image, self.metadata)
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
@@ -291,27 +298,7 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
         ]
 
         if convert_to_radiance:
-            if self.metadata.image.measured_quantity_name == "TOA_REFLECTANCE":
-                image_dtype = self._image.profile["dtype"]
-                coeffs = np.array(
-                    [
-                        band.toa_radiance_to_reflectance_factor
-                        for band in self.metadata.image.bands
-                    ]
-                ).astype(np.float32)
-                _validate_coefficients(coeffs, self._image.count)
-
-                data = (self._image.read() / coeffs[:, np.newaxis, np.newaxis]).astype(
-                    image_dtype
-                )
-                self._image.close()
-                self._image = _create_in_memory_dataset(self._image, data)
-            else:
-                e_ = (
-                    "Can only convert `TOA_REFLECTANCE` to `TOA_RADIANCE`. The measured"
-                    f" unit is `{self.metadata.image.measured_quantity_name}`."
-                )
-                raise ValueError(e_)
+            self._image = _convert_to_radiance(self._image, self.metadata)
 
     def __repr__(self):
         """Pretty printing of the object with the most important info"""
