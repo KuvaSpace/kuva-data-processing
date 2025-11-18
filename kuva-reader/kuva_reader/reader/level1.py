@@ -216,10 +216,10 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         return self._read_array(self.image_path / bad_pixel_filename)
 
     def get_angles_mask(self) -> rio.DatasetReader:
-        """Get the bad pixel mask associated to each camera of the L0 product
+        """Get the bad angles mask associated with each band
         Returns
         -------
-            The bad pixel masks of the cameras
+            Per band viewing angles masks of the products
         """
 
         angles_filename = self.image_path / "viewing_angles_mask.tif"
