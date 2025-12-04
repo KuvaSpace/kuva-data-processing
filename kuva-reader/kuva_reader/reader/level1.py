@@ -216,7 +216,8 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
         return self._read_array(self.image_path / bad_pixel_filename)
 
     def get_angles_mask(self) -> rio.DatasetReader:
-        """Get the bad angles mask associated with each band
+        """Get the viewing angles mask associated with each band
+
         Returns
         -------
             Per band viewing angles masks of the products
@@ -363,6 +364,18 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
                 )
 
         return metadata
+
+    def get_angles_mask(self) -> rio.DatasetReader:
+        """Get the viewing angles mask associated with each band
+
+        Returns
+        -------
+            Per band viewing angles masks of the products
+        """
+
+        angles_filename = self.image_path / "viewing_angles_mask.tif"
+
+        return self._read_array(self.image_path / angles_filename)
 
     def release_memory(self):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of
