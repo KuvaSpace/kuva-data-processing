@@ -290,6 +290,7 @@ def basis_at_geoid(𝜑: float, 𝜆: float, h: float):
     """Returns the basis function for Earth coordinates"""
     return basis_at_point(𝜑, 𝜆, h, Earth)
 
+
 def ray_ellipsoid_intersection_new(
     ray_origin: np.ndarray, ray_directions: np.ndarray, ellipsoid: Ellipsoid
 ) -> np.ndarray:
@@ -317,6 +318,7 @@ def ray_ellipsoid_intersection_new(
 
     return ray_origin + shortest_t[:, None] * ray_directions
 
+
 def vectorized_ray_ellipsoid_intersection(
     a: float,
     b: float,
@@ -341,19 +343,31 @@ def vectorized_ray_ellipsoid_intersection(
 
     The two solutions for each of the rays
     """
-    u,v,w = ray_directions[:, 0], ray_directions[:, 1], ray_directions[:, 2]
+    u, v, w = ray_directions[:, 0], ray_directions[:, 1], ray_directions[:, 2]
 
+    discrim = (
+        a**4 * w**2
+        + a**2 * b**2 * u**2
+        + a**2 * b**2 * v**2
+        - a**2 * u**2 * z0**2
+        + 2 * a**2 * u * w * x0 * z0
+        - a**2 * v**2 * z0**2
+        + 2 * a**2 * v * w * y0 * z0
+        - a**2 * w**2 * x0**2
+        - a**2 * w**2 * y0**2
+        - b**2 * u**2 * y0**2
+        + 2 * b**2 * u * v * x0 * y0
+        - b**2 * v**2 * x0**2
+    )
+    den = a**2 * w**2 + b**2 * u**2 + b**2 * v**2
+    indep = -(a**2) * w * z0 - b**2 * u * x0 - b**2 * v * y0
 
-    discrim = a**4*w**2 + a**2*b**2*u**2 + a**2*b**2*v**2 - a**2*u**2*z0**2 + 2*a**2*u*w*x0*z0 - a**2*v**2*z0**2 + 2*a**2*v*w*y0*z0 - a**2*w**2*x0**2 - a**2*w**2*y0**2 - b**2*u**2*y0**2 + 2*b**2*u*v*x0*y0 - b**2*v**2*x0**2
-    den = a**2*w**2 + b**2*u**2 + b**2*v**2
-    indep = -a**2*w*z0 - b**2*u*x0 - b**2*v*y0
-
-    sol1 = (indep - b*np.sqrt(discrim))/ den
-    sol2 = (indep + b*np.sqrt(discrim))/ den
+    sol1 = (indep - b * np.sqrt(discrim)) / den
+    sol2 = (indep + b * np.sqrt(discrim)) / den
 
     sols = np.vstack([sol1, sol2])
 
-    return np.min(sols,axis=0)
+    return np.min(sols, axis=0)
 
 
 def ray_Earth_intersection_new(

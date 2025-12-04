@@ -1,6 +1,6 @@
 import typing
 from datetime import datetime
-from typing import cast, Optional
+from typing import cast
 from zoneinfo import ZoneInfo
 
 from pint import Quantity, UnitRegistry
@@ -8,10 +8,10 @@ from pydantic import (
     UUID4,
     BaseModel,
     ConfigDict,
+    Field,
     SerializationInfo,
     field_serializer,
     field_validator,
-    Field
 )
 from rasterio import Affine
 from rasterio.rpc import RPC
@@ -241,8 +241,8 @@ class Band(BaseModelWithUnits):
 
     index: int
     wavelength: Quantity
-    zenith_viewing_angle: Optional[Quantity] = Field(default=None)
-    azimuth_viewing_angle: Optional[Quantity] = Field(default=None)
+    zenith_viewing_angle: Quantity | None = Field(default=None)
+    azimuth_viewing_angle: Quantity | None = Field(default=None)
 
     scale: float = 1.0
     offset: float = 0.0
@@ -250,15 +250,19 @@ class Band(BaseModelWithUnits):
     _check_wl_distance = field_validator("wavelength", mode="before")(
         must_be_positive_distance
     )
-    _check_zenith_angle = field_validator("zenith_viewing_angle", mode="before")(must_be_angle)
-    _check_azimuth_angle = field_validator("azimuth_viewing_angle", mode="before")(must_be_angle)
+    _check_zenith_angle = field_validator("zenith_viewing_angle", mode="before")(
+        must_be_angle
+    )
+    _check_azimuth_angle = field_validator("azimuth_viewing_angle", mode="before")(
+        must_be_angle
+    )
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
     @field_serializer("wavelength", when_used="json")
     def _serialize_quantity(self, q: Quantity):
         return serialize_quantity(q)
-     
+
     @field_serializer("zenith_viewing_angle", when_used="json")
     def _serialize_zenith_angle(self, q: Quantity | None):
         if q is None:
