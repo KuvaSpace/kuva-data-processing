@@ -350,6 +350,12 @@ class Frame(BaseModelWithUnits):
     position
         ECEF geodetic coordinates (estimated from telemetry) of the position of the
         spacecraft in at the start of frame acquisition (SRID=4978).
+    viewing_zenith_angle
+        Represents the satellite's viewing zenith angle in degrees as seen from the
+        ground target.
+    viewing_azimuth_angle
+        Represents the satellite's horizontal direction in degrees from the
+        ground target, measured clockwise from north.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]
@@ -358,6 +364,8 @@ class Frame(BaseModelWithUnits):
     integration_time: Quantity
     sat_ecef_orientation: quaternion
     position: CRSGeometry
+    viewing_zenith_angle: Quantity | None = Field(default=None)
+    viewing_azimuth_angle: Quantity | None = Field(default=None)
 
     _check_int_time = field_validator("integration_time", mode="before")(
         must_be_positive_time
@@ -372,6 +380,14 @@ class Frame(BaseModelWithUnits):
         check_is_utc_datetime
     )
     _parse_geom = field_validator("position", mode="before")(parse_crs_geometry)
+
+    _check_viewing_zenith_angle = field_validator(
+        "viewing_zenith_angle", mode="before"
+    )(must_be_angle)
+    _check_viewing_azimuth_angle = field_validator(
+        "viewing_azimuth_angle", mode="before"
+    )(must_be_angle)
+
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
     def footprint(self, camera: Camera) -> Polygon:
@@ -396,6 +412,18 @@ class Frame(BaseModelWithUnits):
     @field_serializer("position")
     def _serialize_CRSGeometry(self, p: CRSGeometry):
         return serialize_CRSGeometry(p)
+
+    @field_serializer("viewing_zenith_angle", when_used="json")
+    def _serialize_viewing_zenith_angle(self, q: Quantity | None):
+        if q is None:
+            return None
+        return serialize_quantity(q)
+
+    @field_serializer("viewing_azimuth_angle", when_used="json")
+    def _serialize_viewing_azimuth_angle(self, q: Quantity | None):
+        if q is None:
+            return None
+        return serialize_quantity(q)
 
 
 class Band(BaseModelWithUnits):

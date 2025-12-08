@@ -111,6 +111,18 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
 
         return metadata
 
+    def get_viewing_angles(self) -> rio.DatasetReader:
+        """Get the viewing angles mask associated with each band
+
+        Returns
+        -------
+            Per band viewing angles masks of the products
+        """
+
+        angles_filename = self.image_path / "viewing_angles.tif"
+
+        return self._read_array(self.image_path / angles_filename)
+
     def release_memory(self):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of
         the `image` variable.
@@ -129,7 +141,6 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
             crs_epsg = src.crs.to_epsg()
             geotransform = src.transform
             gsd_w, gsd_h = src.res
-
 
         with (self.image_path / metadata_file_name).open("w") as fh:
             fh.write(

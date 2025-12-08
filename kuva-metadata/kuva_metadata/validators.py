@@ -175,8 +175,10 @@ def must_be_time(quantity: Quantity_) -> Quantity:
     return must_be_unit(quantity, "second")
 
 
-def must_be_angle(quantity: Quantity_) -> Quantity:
-    """Parse a Pint unit and make sure it has units of angle"""
+def must_be_angle(quantity: Quantity | None) -> Quantity | None:
+    """Parse a Pint unit and make sure it has units of angles or None."""
+    if quantity is None:
+        return None
     return must_be_unit(quantity, "degree")
 
 

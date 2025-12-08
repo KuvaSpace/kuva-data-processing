@@ -215,6 +215,18 @@ class Level1ABProduct(ProductBase[MetadataLevel1AB]):
 
         return self._read_array(self.image_path / bad_pixel_filename)
 
+    def get_viewing_angles(self) -> rio.DatasetReader:
+        """Get the viewing angles associated with each band
+
+        Returns
+        -------
+            Per band viewing angles masks of the products
+        """
+
+        angles_filename = self.image_path / "viewing_angles.tif"
+
+        return self._read_array(self.image_path / angles_filename)
+
     def release_memory(self):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of
         the `image` variable.
@@ -352,6 +364,18 @@ class Level1CProduct(ProductBase[MetadataLevel1C]):
                 )
 
         return metadata
+
+    def get_viewing_angles(self) -> rio.DatasetReader:
+        """Get the viewing angles mask associated with each band
+
+        Returns
+        -------
+            Per band viewing angles masks of the products
+        """
+
+        angles_filename = self.image_path / "viewing_angles.tif"
+
+        return self._read_array(self.image_path / angles_filename)
 
     def release_memory(self):
         """Explicitely closes the Rasterio DatasetReader and releases the memory of

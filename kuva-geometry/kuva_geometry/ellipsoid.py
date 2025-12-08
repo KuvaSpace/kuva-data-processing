@@ -289,3 +289,89 @@ def ray_Earth_intersection(
 def basis_at_geoid(𝜑: float, 𝜆: float, h: float):
     """Returns the basis function for Earth coordinates"""
     return basis_at_point(𝜑, 𝜆, h, Earth)
+
+
+def ray_ellipsoid_intersection_new(
+    ray_origin: np.ndarray, ray_directions: np.ndarray, ellipsoid: Ellipsoid
+) -> np.ndarray:
+    """Calculate the intersection of a ray and an ellipsoid
+
+    Parameters
+    ----------
+    ray_origin
+        Origin point of ray
+    ray_direction
+        Direction of ray
+    ellipsoid
+        Ellipsoid to calculate intersection with
+
+    Returns
+    -------
+        Intersection of a ray and ellipsoid
+    """
+    shortest_t = vectorized_ray_ellipsoid_intersection(
+        ellipsoid.major_axis,
+        ellipsoid.minor_axis,
+        *ray_origin,
+        ray_directions,
+    )
+
+    return ray_origin + shortest_t[:, None] * ray_directions
+
+
+def vectorized_ray_ellipsoid_intersection(
+    a: float,
+    b: float,
+    x0: float,
+    y0: float,
+    z0: float,
+    ray_directions: np.ndarray,
+) -> np.ndarray:
+    """
+    Parameters
+    ----------
+    a, b
+        Axis of the ellipsoid
+    x0, y0, z0
+        Origin of the rays
+    u, v, w
+        Components of the ray direction. This can be arrays as long as all have the same len
+
+    Returns
+    -------
+    np.ndarray, np.ndarray
+
+    The two solutions for each of the rays
+    """
+    u, v, w = ray_directions[:, 0], ray_directions[:, 1], ray_directions[:, 2]
+
+    discrim = (
+        a**4 * w**2
+        + a**2 * b**2 * u**2
+        + a**2 * b**2 * v**2
+        - a**2 * u**2 * z0**2
+        + 2 * a**2 * u * w * x0 * z0
+        - a**2 * v**2 * z0**2
+        + 2 * a**2 * v * w * y0 * z0
+        - a**2 * w**2 * x0**2
+        - a**2 * w**2 * y0**2
+        - b**2 * u**2 * y0**2
+        + 2 * b**2 * u * v * x0 * y0
+        - b**2 * v**2 * x0**2
+    )
+    den = a**2 * w**2 + b**2 * u**2 + b**2 * v**2
+    indep = -(a**2) * w * z0 - b**2 * u * x0 - b**2 * v * y0
+
+    sol1 = (indep - b * np.sqrt(discrim)) / den
+    sol2 = (indep + b * np.sqrt(discrim)) / den
+
+    sols = np.vstack([sol1, sol2])
+
+    return np.min(sols, axis=0)
+
+
+def ray_Earth_intersection_new(
+    ray_origin: np.ndarray, ray_directions: np.ndarray
+) -> np.ndarray:
+    """Calculate where a ray intersects with the Earth"""
+    return ray_ellipsoid_intersection_new(ray_origin, ray_directions, Earth)

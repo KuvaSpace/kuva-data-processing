@@ -8,6 +8,7 @@ from pydantic import (
     UUID4,
     BaseModel,
     ConfigDict,
+    Field,
     SerializationInfo,
     field_serializer,
     field_validator,
@@ -232,10 +233,16 @@ class Band(BaseModelWithUnits):
         Scale to convert stored pixel values to radiance.
     offset
         Offset to convert stored pixel values to radiance.
+    viewing_zenith_angle
+        The viewing zenith angle of the central pixel of the band.
+    viewing_azimuth_angle
+        The viewing azimuth angle of the central pixel of the band.
     """
 
     index: int
     wavelength: Quantity
+    viewing_zenith_angle: Quantity | None = Field(default=None)
+    viewing_azimuth_angle: Quantity | None = Field(default=None)
 
     scale: float = 1.0
     offset: float = 0.0
@@ -243,10 +250,29 @@ class Band(BaseModelWithUnits):
     _check_wl_distance = field_validator("wavelength", mode="before")(
         must_be_positive_distance
     )
+    _check_viewing_zenith_angle = field_validator(
+        "viewing_zenith_angle", mode="before"
+    )(must_be_angle)
+    _check_viewing_azimuth_angle = field_validator(
+        "viewing_azimuth_angle", mode="before"
+    )(must_be_angle)
+
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
     @field_serializer("wavelength", when_used="json")
     def _serialize_quantity(self, q: Quantity):
+        return serialize_quantity(q)
+
+    @field_serializer("viewing_zenith_angle", when_used="json")
+    def _serialize_viewing_zenith_angle(self, q: Quantity | None):
+        if q is None:
+            return None
+        return serialize_quantity(q)
+
+    @field_serializer("viewing_azimuth_angle", when_used="json")
+    def _serialize_viewing_azimuth_angle(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
 
