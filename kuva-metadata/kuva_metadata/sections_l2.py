@@ -29,6 +29,10 @@ class BandL2A(Band):
         Scale to convert stored pixel values to radiance.
     offset
         Offset to convert stored pixel values to radiance.
+    viewing_zenith_angle
+        The viewing zenith angle of the central pixel of the band.
+    viewing_azimuth_angle
+        The viewing azimuth angle of the central pixel of the band.
     """
 
     pass
