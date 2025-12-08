@@ -111,7 +111,7 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
 
         return metadata
 
-    def get_angles_mask(self) -> rio.DatasetReader:
+    def get_viewing_angles(self) -> rio.DatasetReader:
         """Get the viewing angles mask associated with each band
 
         Returns
@@ -119,7 +119,7 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
             Per band viewing angles masks of the products
         """
 
-        angles_filename = self.image_path / "viewing_angles_mask.tif"
+        angles_filename = self.image_path / "viewing_angles.tif"
 
         return self._read_array(self.image_path / angles_filename)
 
