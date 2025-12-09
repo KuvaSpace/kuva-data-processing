@@ -237,12 +237,15 @@ class Band(BaseModelWithUnits):
         The viewing zenith angle of the central pixel of the band.
     viewing_azimuth_angle
         The viewing azimuth angle of the central pixel of the band.
+    camera_name
+        Name of the camera that took the frame.
     """
 
     index: int
     wavelength: Quantity
     viewing_zenith_angle: Quantity | None = Field(default=None)
     viewing_azimuth_angle: Quantity | None = Field(default=None)
+    camera_name: str | None = Field(default=None)
 
     scale: float = 1.0
     offset: float = 0.0
