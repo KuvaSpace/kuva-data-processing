@@ -357,7 +357,7 @@ class Frame(BaseModelWithUnits):
         Represents the satellite's horizontal direction in degrees from the
         ground target, measured clockwise from north.
     camera_name
-        Name of the camera that took the frame.
+        Name of the camera that acquired the frame.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]

@@ -238,7 +238,7 @@ class Band(BaseModelWithUnits):
     viewing_azimuth_angle
         The viewing azimuth angle of the central pixel of the band.
     camera_name
-        Name of the camera that took the frame.
+        Name of the camera that acquired the band.
     """
 
     index: int
