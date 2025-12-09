@@ -356,6 +356,8 @@ class Frame(BaseModelWithUnits):
     viewing_azimuth_angle
         Represents the satellite's horizontal direction in degrees from the
         ground target, measured clockwise from north.
+    camera_name
+        Name of the camera that acquired the frame.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]
@@ -366,6 +368,7 @@ class Frame(BaseModelWithUnits):
     position: CRSGeometry
     viewing_zenith_angle: Quantity | None = Field(default=None)
     viewing_azimuth_angle: Quantity | None = Field(default=None)
+    camera_name: str | None = Field(default=None)
 
     _check_int_time = field_validator("integration_time", mode="before")(
         must_be_positive_time
