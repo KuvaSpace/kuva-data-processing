@@ -23,10 +23,6 @@ class BandL1AB(Band):
         Index within a datacube associated with the band (0-indexed).
     wavelength
         The barycenter wavelength associated with the acquired band.
-    wavelength_config
-        The configured wavelength associated with the acquired band.
-    width
-        The width associated with the acquired band centered at the barycenter wavelength.
     scale
         Scale to convert stored pixel values to radiance.
     offset
@@ -54,10 +50,6 @@ class BandL1C(Band):
         Index within a datacube associated with the band (0-indexed).
     wavelength
         The barycenter wavelength associated with the acquired band.
-    wavelength_config
-        The configured wavelength associated with the acquired band.
-    width
-        The width associated with the acquired band centered at the barycenter wavelength.
     scale
         Scale to convert stored pixel values to radiance.
     offset
