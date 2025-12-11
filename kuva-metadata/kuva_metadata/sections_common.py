@@ -228,7 +228,11 @@ class Band(BaseModelWithUnits):
     index
         Index within a datacube associated with the band (0-indexed).
     wavelength
-        Nominal wavelength associated with the Fabry-Perot Interferometer position.
+        The barycenter wavelength associated with the acquired band.
+    wavelength_config
+        The configured wavelength associated with the acquired band.
+    width
+        The width associated with the acquired band centered at the barycenter wavelength.
     scale
         Scale to convert stored pixel values to radiance.
     offset
@@ -243,6 +247,8 @@ class Band(BaseModelWithUnits):
 
     index: int
     wavelength: Quantity
+    wavelength_config: Quantity | None = Field(default=None)
+    width: Quantity | None = Field(default=None)
     viewing_zenith_angle: Quantity | None = Field(default=None)
     viewing_azimuth_angle: Quantity | None = Field(default=None)
     camera_name: str | None = Field(default=None)
@@ -250,9 +256,9 @@ class Band(BaseModelWithUnits):
     scale: float = 1.0
     offset: float = 0.0
 
-    _check_wl_distance = field_validator("wavelength", mode="before")(
-        must_be_positive_distance
-    )
+    _check_wl_distance = field_validator(
+        "wavelength", "wavelength_config", "width", mode="before"
+    )(must_be_positive_distance)
     _check_viewing_zenith_angle = field_validator(
         "viewing_zenith_angle", mode="before"
     )(must_be_angle)
@@ -262,8 +268,10 @@ class Band(BaseModelWithUnits):
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
-    @field_serializer("wavelength", when_used="json")
-    def _serialize_quantity(self, q: Quantity):
+    @field_serializer("wavelength", "wavelength_config", "width", when_used="json")
+    def _serialize_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
     @field_serializer("viewing_zenith_angle", when_used="json")

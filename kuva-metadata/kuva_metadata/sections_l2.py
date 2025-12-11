@@ -24,7 +24,11 @@ class BandL2A(Band):
     index
         Index within a datacube associated with the band (0-indexed).
     wavelength
-        Nominal wavelength associated with the Fabry-Perot Interferometer position.
+        The barycenter wavelength associated with the acquired band.
+    wavelength_config
+        The configured wavelength associated with the acquired band.
+    width
+        The width associated with the acquired band centered at the barycenter wavelength.
     scale
         Scale to convert stored pixel values to radiance.
     offset
@@ -33,6 +37,8 @@ class BandL2A(Band):
         The viewing zenith angle of the central pixel of the band.
     viewing_azimuth_angle
         The viewing azimuth angle of the central pixel of the band.
+    camera_name
+        Name of the camera that acquired the band.
     """
 
     pass
