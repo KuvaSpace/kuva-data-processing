@@ -356,6 +356,8 @@ class Frame(BaseModelWithUnits):
     viewing_azimuth_angle
         Represents the satellite's horizontal direction in degrees from the
         ground target, measured clockwise from north.
+    camera_name
+        Name of the camera that acquired the frame.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]
@@ -366,6 +368,7 @@ class Frame(BaseModelWithUnits):
     position: CRSGeometry
     viewing_zenith_angle: Quantity | None = Field(default=None)
     viewing_azimuth_angle: Quantity | None = Field(default=None)
+    camera_name: str | None = Field(default=None)
 
     _check_int_time = field_validator("integration_time", mode="before")(
         must_be_positive_time
@@ -434,7 +437,11 @@ class Band(BaseModelWithUnits):
     index
         Index associated with the band (0-indexed), within a datacube.
     wavelength
-        Nominal wavelength associated with the Fabry-Perot Interferometer position.
+        The barycenter wavelength associated with the acquired band.
+    wavelength_config
+        The configured wavelength associated with the acquired band.
+    width
+        The width associated with the acquired band centered at the barycenter wavelength.
     setpoints
         Setpoint used by acquisition in the satellite. This may differ from requested
         setpoints due to e.g. internal temperature.
@@ -451,15 +458,17 @@ class Band(BaseModelWithUnits):
 
     index: Annotated[int, Field(ge=0, strict=True)]
     wavelength: Quantity
+    wavelength_config: Quantity | None = Field(default=None)
+    width: Quantity | None = Field(default=None)
     setpoints: tuple[int, int, int]
     start_acquisition_date: datetime
     end_acquisition_date: datetime
     frames: list[Frame]
     reference_frame_index: Annotated[int, Field(ge=0, strict=True)] | None = None
 
-    _check_wavelength = field_validator("wavelength", mode="before")(
-        must_be_positive_distance
-    )
+    _check_wavelength = field_validator(
+        "wavelength", "wavelength_config", "width", mode="before"
+    )(must_be_positive_distance)
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
     )(parse_date)
@@ -468,8 +477,10 @@ class Band(BaseModelWithUnits):
     )
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
-    @field_serializer("wavelength", when_used="json")
-    def _serialize_quantity(self, q: Quantity):
+    @field_serializer("wavelength", "wavelength_config", "width", when_used="json")
+    def _serialize_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
     @property

@@ -206,8 +206,11 @@ def must_be_positive_quantity(quantity: Quantity_) -> Quantity:
     return quantity
 
 
-def must_be_positive_distance(quantity: Quantity_) -> Quantity:
+def must_be_positive_distance(quantity: Quantity_ | None) -> Quantity | None:
     """Parse a Pint object and make sure it a positive distance"""
+    if quantity is None:
+        return None
+
     quantity = parse_quantity(quantity)
     quantity = must_be_positive_quantity(quantity)
     quantity = must_be_distance(quantity)
