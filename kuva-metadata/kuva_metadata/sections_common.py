@@ -43,7 +43,9 @@ class Header(BaseModel):
     Attributes
     ----------
     version
-        Version of the library used to create the file.
+        Version (commit hash) of the library used to create the product.
+    tag
+        Baseline tag indicating with which baseline version the product was created.
     author
         The author of the file.
     creation_date
@@ -51,6 +53,7 @@ class Header(BaseModel):
     """
 
     version: str
+    tag: str | None = Field(default=None, exclude_if=lambda v: v is None)
     author: str
     creation_date: datetime = datetime.now().astimezone(ZoneInfo("Etc/UTC"))
 
@@ -250,7 +253,9 @@ class Band(BaseModelWithUnits):
     scale: float = 1.0
     offset: float = 0.0
 
-    _check_wl_distance = field_validator("wavelength", mode="before")(must_be_positive_distance)
+    _check_wl_distance = field_validator("wavelength", mode="before")(
+        must_be_positive_distance
+    )
     _check_viewing_zenith_angle = field_validator(
         "viewing_zenith_angle", mode="before"
     )(must_be_angle)
