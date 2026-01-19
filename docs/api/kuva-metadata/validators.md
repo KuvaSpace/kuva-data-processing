@@ -104,7 +104,6 @@ distance.
 - `index`
 - `wavelength`
 - `start/end_acquisition_date`
-- `reference_frame_index`
 
 ### Image
 

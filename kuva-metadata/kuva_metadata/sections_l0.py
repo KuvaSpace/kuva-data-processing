@@ -447,9 +447,6 @@ class Band(BaseModelWithUnits):
         Timestamp for the end of the acquisition of the last frame in the band.
     frames
         A list with the frames.
-    reference_frame_index
-        Index of the frame within the band (0-indexed) that was used in the computation
-         of homographies.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]
@@ -458,7 +455,6 @@ class Band(BaseModelWithUnits):
     start_acquisition_date: datetime
     end_acquisition_date: datetime
     frames: list[Frame]
-    reference_frame_index: Annotated[int, Field(ge=0, strict=True)] | None = None
 
     _check_wavelength = field_validator("wavelength", mode="before")(
         must_be_positive_distance
@@ -504,16 +500,12 @@ class DataCube(BaseModelWithUnits):
         Timestamp of the last frame trigger
     bands
         A dict with the bands. Not necessarily ordered with respect to the band index
-    reference_band_index
-        Index of the band within the image file (0-indexed) that was used in the
-        computation of homographies.
     """
 
     camera: Camera
     start_acquisition_date: datetime
     end_acquisition_date: datetime
     bands: list[Band]
-    reference_band_index: Annotated[int, Field(ge=0, strict=True)] | None = None
 
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
