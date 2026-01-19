@@ -55,7 +55,6 @@ def band_metadata(ureg) -> Band:
         start_acquisition_date=datetime.datetime(2025, 1, 1, 12, 0, 0, tzinfo=utc),
         end_acquisition_date=datetime.datetime(2025, 1, 1, 12, 0, 1, tzinfo=utc),
         frames=frames,
-        reference_frame_index=0,
     )
     return band
 
