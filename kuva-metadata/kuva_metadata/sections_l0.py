@@ -152,12 +152,6 @@ class AlignmentParameters(BaseModel):
     product_stitching_cube_order
         A list of camera names with the order of the camera names specifying the order
         in which the cubes of the sequence will be stored in the L1 product.
-    band_alignment_use_snr_enhanced_frames_by_stacking
-        Whether to first enhance the SNR of the alignment frames by stacking them.
-    cube_alignment_use_snr_enhanced_frames_by_stacking
-        Whether to first enhance the SNR of the alignment frames by stacking them.
-    product_stitching_use_snr_enhanced_frames_by_stacking
-        Whether to first enhance the SNR of the alignment frames by stacking them.
     """
 
     # The alignment algorithms
@@ -191,11 +185,6 @@ class AlignmentParameters(BaseModel):
 
     # The cube/camera order in which the cubes in the L1 product will be stored
     product_stitching_cube_order: Annotated[list[str], Field(min_length=1)]
-
-    # Config to decide whether frames should be stacked
-    band_alignment_use_snr_enhanced_frames_by_stacking: bool
-    cube_alignment_use_snr_enhanced_frames_by_stacking: bool
-    product_stitching_use_snr_enhanced_frames_by_stacking: bool
 
     model_config = ConfigDict(validate_assignment=True)
 
@@ -447,9 +436,6 @@ class Band(BaseModelWithUnits):
         Timestamp for the end of the acquisition of the last frame in the band.
     frames
         A list with the frames.
-    reference_frame_index
-        Index of the frame within the band (0-indexed) that was used in the computation
-         of homographies.
     """
 
     index: Annotated[int, Field(ge=0, strict=True)]
@@ -458,7 +444,6 @@ class Band(BaseModelWithUnits):
     start_acquisition_date: datetime
     end_acquisition_date: datetime
     frames: list[Frame]
-    reference_frame_index: Annotated[int, Field(ge=0, strict=True)] | None = None
 
     _check_wavelength = field_validator("wavelength", mode="before")(
         must_be_positive_distance
@@ -504,16 +489,12 @@ class DataCube(BaseModelWithUnits):
         Timestamp of the last frame trigger
     bands
         A dict with the bands. Not necessarily ordered with respect to the band index
-    reference_band_index
-        Index of the band within the image file (0-indexed) that was used in the
-        computation of homographies.
     """
 
     camera: Camera
     start_acquisition_date: datetime
     end_acquisition_date: datetime
     bands: list[Band]
-    reference_band_index: Annotated[int, Field(ge=0, strict=True)] | None = None
 
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
