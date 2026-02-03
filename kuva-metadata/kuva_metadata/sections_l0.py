@@ -152,12 +152,6 @@ class AlignmentParameters(BaseModel):
     product_stitching_cube_order
         A list of camera names with the order of the camera names specifying the order
         in which the cubes of the sequence will be stored in the L1 product.
-    band_alignment_use_snr_enhanced_frames_by_stacking
-        Whether to first enhance the SNR of the alignment frames by stacking them.
-    cube_alignment_use_snr_enhanced_frames_by_stacking
-        Whether to first enhance the SNR of the alignment frames by stacking them.
-    product_stitching_use_snr_enhanced_frames_by_stacking
-        Whether to first enhance the SNR of the alignment frames by stacking them.
     """
 
     # The alignment algorithms
@@ -191,11 +185,6 @@ class AlignmentParameters(BaseModel):
 
     # The cube/camera order in which the cubes in the L1 product will be stored
     product_stitching_cube_order: Annotated[list[str], Field(min_length=1)]
-
-    # Config to decide whether frames should be stacked
-    band_alignment_use_snr_enhanced_frames_by_stacking: bool
-    cube_alignment_use_snr_enhanced_frames_by_stacking: bool
-    product_stitching_use_snr_enhanced_frames_by_stacking: bool
 
     model_config = ConfigDict(validate_assignment=True)
 
