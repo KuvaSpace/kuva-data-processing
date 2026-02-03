@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kuva-metadata"
-version = "1.1.6"
+version = "1.1.8"
 description = "Definitions of Kuva Space product metadata"
 authors = [
   { name = "Guillem Ballesteros", email = "guillem@kuvaspace.com" },

@@ -125,7 +125,7 @@ wheels = [
 
 [[package]]
 name = "kuva-metadata"
-version = "1.1.5"
+version = "1.1.8"
 source = { editable = "." }
 dependencies = [
     { name = "kuva-geometry" },
