@@ -382,9 +382,29 @@ class Frame(BaseModelWithUnits):
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
-    def footprint(self, camera: Camera) -> Polygon:
-        """Get the ground footprint of a frame if it were taken by camera"""
-        camera_footprint = frame_footprint(self, camera, use_negative_sensor_plane=True)
+    def footprint(
+        self, camera: Camera, systematic_offset_quaternion: quaternion | None = None
+    ) -> Polygon:
+        """Get the ground footprint of a frame if it were taken by camera
+
+        Parameters
+        ----------
+        camera
+            Camera intrinsic parameters
+        systematic_offset_quaternion, optional
+            Quaternion to correct for the systematic geolocation offset of L0 products.
+            By default None
+
+        Returns
+        -------
+            The footprint on the ground as a Shapely polygon
+        """
+        camera_footprint = frame_footprint(
+            self,
+            camera,
+            use_negative_sensor_plane=True,
+            systematic_offset_quaternion=systematic_offset_quaternion,
+        )
 
         return camera_footprint
 
