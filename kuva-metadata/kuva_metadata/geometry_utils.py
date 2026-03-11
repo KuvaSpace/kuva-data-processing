@@ -148,6 +148,7 @@ def frame_footprint(
     frame: Frame,
     camera: Camera,
     use_negative_sensor_plane: bool = False,
+    systematic_offset_quaternion: quaternion.quaternion | None = None,
 ) -> shapely.Polygon:
     """Find the footprint on the ground associated with the corners rays of a camera
 
@@ -160,6 +161,9 @@ def frame_footprint(
         The camera parameters
     use_negative_sensor_plane, optional
         Whether to use the negative sensor plane to calculate the rays, by default False
+    systematic_offset_quaternion, optional
+        Quaternion to correct for the systematic geolocation offset of L0 products.
+        By default None.
 
     Returns
     -------
@@ -167,7 +171,15 @@ def frame_footprint(
     """
     sat_pos, sat_ecef_orientation = frame.position.numpy, frame.sat_ecef_orientation
 
-    orientation = sat_ecef_orientation * camera.sensor_wrt_sat_axis_quaternion
+    # Apply systematic offset if provided, otherwise use identity (no effect)
+    if systematic_offset_quaternion is None:
+        systematic_offset_quaternion = quaternion.quaternion(1, 0, 0, 0)
+
+    orientation = (
+        sat_ecef_orientation
+        * systematic_offset_quaternion
+        * camera.sensor_wrt_sat_axis_quaternion
+    )
 
     _, sensor_corners_ray = get_sensor_corner_rays(
         camera, sat_pos, orientation, use_negative_sensor_plane
