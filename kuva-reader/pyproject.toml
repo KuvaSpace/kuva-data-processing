@@ -52,6 +52,10 @@ convention = "numpy"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [ "F401", "D104", "E402",]
 
+# Supply chain attack protection
+[tool.uv]
+exclude-newer = "1 week"
+
 # Uncomment during development
 # [tool.uv.sources]
 # kuva-geometry = { path = "../kuva-geometry" }
