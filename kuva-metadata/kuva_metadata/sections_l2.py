@@ -9,6 +9,7 @@ from kuva_metadata.sections_common import (  # noqa # pylint: disable=unused-imp
     Radiometry,
     RPCoefficients,
     Satellite,
+    AtmosphericCorrectionConfiguration,
 )
 from kuva_metadata.sections_l1 import (  # noqa # pylint: disable=unused-import
     Band,
@@ -43,6 +44,9 @@ class BandL2A(Band):
 class ImageL2A(Image):
     bands: list[BandL2A]
 
+class AtCorConfigL2A(AtmosphericCorrectionConfiguration):
+    pass
+
 
 class MetadataLevel2A(MetadataBase):
     """Metadata for Level-2A products
@@ -56,5 +60,6 @@ class MetadataLevel2A(MetadataBase):
     """
 
     image: ImageL2A
+    atmospheric_correction_configuration: AtCorConfigL2A
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
