@@ -28,7 +28,7 @@ from kuva_metadata.validators import (
     check_is_utc_datetime,
     must_be_angle,
     must_be_distance,
-    must_be_mixing_ratio,
+    must_be_mixing_ratio_or_none,
     must_be_positive_distance,
     must_be_positive_float,
     must_be_positive_quantity,
@@ -440,12 +440,12 @@ class AtmosphericStateVariables(BaseModelWithUnits):
     tco3: Quantity
     tcwv: Quantity
     aot550: float
-    tc_co2: Quantity
-    mr_ch4: Quantity
+    tc_co2: Quantity | None = Field(default=None)
+    mr_ch4: Quantity | None = Field(default=None)
     pressure: Quantity
     wind_speed: Quantity
     aerosol_type: str  # coastal or maritime
-    atmospheric_season: str  # Summer or winter
+    atmospheric_season: str | None = Field(default=None)  # Summer or winter
 
     _check_press = field_validator("pressure", mode="before")(must_be_pressure)
     _check_wind_speed = field_validator("wind_speed", mode="before")(must_be_speed)
@@ -459,7 +459,7 @@ class AtmosphericStateVariables(BaseModelWithUnits):
         must_be_valid_atmospheric_season
     )
     _check_valid_mixing_ratio = field_validator("tc_co2", "mr_ch4", mode="before")(
-        must_be_mixing_ratio
+        must_be_mixing_ratio_or_none
     )
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
@@ -467,13 +467,17 @@ class AtmosphericStateVariables(BaseModelWithUnits):
     @field_serializer(
         "tco3",
         "tcwv",
-        "tc_co2",
-        "mr_ch4",
         "pressure",
         "wind_speed",
         when_used="json",
     )
-    def _serialize_quantity(self, q: Quantity):
+    def _serialize_quantity(self, q: Quantity | None):
+        return serialize_quantity(q)
+
+    @field_serializer("tc_co2", "mr_ch4", when_used="json")
+    def _serialize_maybe_none_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
 
@@ -495,11 +499,11 @@ class GeometryStateVariables(BaseModelWithUnits):
 
     """
 
-    sza: Quantity  # Between 0 and 90
-    saa: Quantity
+    sza: Quantity
+    saa: Quantity | None = Field(default=None)
     vza: Quantity
-    vaa: Quantity
-    altitude: Quantity  # Larger than -0.5
+    vaa: Quantity | None = Field(default=None)
+    altitude: Quantity | None = Field(default=None)
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
@@ -510,7 +514,22 @@ class GeometryStateVariables(BaseModelWithUnits):
         "vaa",
         mode="before",
     )(must_be_angle)
+
     _check_altitude = field_validator("altitude", mode="before")(must_be_distance)
+
+    @field_serializer(
+        "sza",
+        "vza",
+        when_used="json",
+    )
+    def _serialize_quantity(self, q: Quantity):
+        return serialize_quantity(q)
+
+    @field_serializer("saa", "vaa", "altitude", when_used="json")
+    def _serialize_maybe_none_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
+        return serialize_quantity(q)
 
 
 class SceneStateVariables(BaseModelWithUnits):

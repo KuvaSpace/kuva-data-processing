@@ -184,6 +184,8 @@ def must_be_unit(quantity: Quantity_, unit: str) -> Quantity:
 
 def must_be_distance(quantity: Quantity_) -> Quantity:
     """Parse a Pint unit and make sure it has units of distance"""
+    if quantity is None:
+        return None
     return must_be_unit(quantity, "meter")
 
 
@@ -240,7 +242,6 @@ def must_be_positive_time(quantity: Quantity_) -> Quantity:
     quantity = parse_quantity(quantity)
     quantity = must_be_positive_quantity(quantity)
     quantity = must_be_time(quantity)
-
     return quantity
 
 
@@ -255,14 +256,16 @@ def check_is_utc_datetime(timestamp: datetime) -> datetime:
 def must_be_positive_float(number:float) -> float:
     """Parse a float and check it is greater than zero"""
     if number <= 0:
-        msg = "Should be positive"
+        msg = f"Should be positive ({number})"
         raise ValueError(msg)
     return number
 
-def must_be_valid_atmospheric_season(atm_season:str):
+def must_be_valid_atmospheric_season(atm_season:str|None):
     """Parse atmospheric season value and check it is one of VALID_ATMOS_SEASONS"""
     if atm_season in VALID_ATMOS_SEASONS:
         return atm_season
+    elif atm_season is None:
+        return None
     else:
         msg = f"Atmospheric seasons must be one of {VALID_ATMOS_SEASONS}"
         raise ValueError(msg)
@@ -285,11 +288,16 @@ def must_be_dimensionless(quantity):
     return quantity
 
 
-def must_be_mixing_ratio(quantity):
+def must_be_mixing_ratio(quantity: Quantity):
     """ Checks that mixing ratios are dimensionless and positive."""
     quantity = parse_quantity(quantity)
     quantity = must_be_dimensionless(quantity)
     quantity = must_be_positive_quantity(quantity)
+    return quantity
+
+def must_be_mixing_ratio_or_none(quantity: Quantity|None):
+    if quantity is not None:
+        quantity = must_be_mixing_ratio(quantity)
     return quantity
 
 
