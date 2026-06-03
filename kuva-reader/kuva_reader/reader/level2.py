@@ -153,6 +153,7 @@ class Level2AProduct(ProductBase[MetadataLevel2A]):
                         "gsd_w": gsd_w,
                         "gsd_h": gsd_h,
                     },
+                    exclude_none=True   # This prevents "null" entries from being shown in the metadata
                 )
             )
 
