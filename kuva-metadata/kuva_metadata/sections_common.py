@@ -297,6 +297,9 @@ class Image(BaseModelWithUnits):
         Solar azimuth angle of the image area
     local_viewing_angle
         The angle between the satellite's pointing direction and nadir.
+    altitude
+        Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84
+        ellipsoid.
     acquired_on
         Time of image acquisition
     source_images
@@ -324,6 +327,7 @@ class Image(BaseModelWithUnits):
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
     local_viewing_angle: Quantity
+    altitude: Quantity | None = None
     acquired_on: datetime
     source_images: list[UUID4]
     measured_quantity_name: str
@@ -341,6 +345,9 @@ class Image(BaseModelWithUnits):
         "local_viewing_angle",
         mode="before",
     )(must_be_angle)
+    _check_altitude = field_validator("altitude", mode="before")(
+        must_be_positive_distance
+    )
     _parse_timestamp = field_validator("acquired_on", mode="before")(parse_date)
     _check_tz = field_validator("acquired_on")(check_is_utc_datetime)
     _parse_geom = field_validator("footprint", mode="before")(parse_crs_geometry)
@@ -351,9 +358,12 @@ class Image(BaseModelWithUnits):
         "local_solar_zenith_angle",
         "local_solar_azimuth_angle",
         "local_viewing_angle",
+        "altitude",
         when_used="json",
     )
-    def _serialize_quantity(self, q: Quantity):
+    def _serialize_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
     @field_serializer("footprint")

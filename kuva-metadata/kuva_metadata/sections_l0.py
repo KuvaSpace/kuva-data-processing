@@ -563,6 +563,9 @@ class Image(BaseModelWithUnits):
         The azimuth angle between the local observation point and the sun.
     local_viewing_angle
         The angle between the satellite's pointing direction and nadir.
+    altitude
+        Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84
+        ellipsoid.
     acquisition_mode
         Acquisition mode of the satellite.
     footprint
@@ -586,6 +589,7 @@ class Image(BaseModelWithUnits):
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
     local_viewing_angle: Quantity
+    altitude: Quantity | None = None
     acquisition_mode: str
     footprint: CRSGeometry
     data_cubes: dict[str, DataCube]
@@ -599,6 +603,9 @@ class Image(BaseModelWithUnits):
         "local_viewing_angle",
         mode="before",
     )(must_be_angle)
+    _check_altitude = field_validator("altitude", mode="before")(
+        must_be_positive_distance
+    )
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
     )(parse_date)
@@ -666,9 +673,12 @@ class Image(BaseModelWithUnits):
         "local_solar_zenith_angle",
         "local_solar_azimuth_angle",
         "local_viewing_angle",
+        "altitude",
         when_used="json",
     )
-    def _serialize_quantity(self, q: Quantity):
+    def _serialize_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
     @field_serializer("footprint")
