@@ -1,0 +1,39 @@
+{
+    "method": "sprinkler/tractor",                          
+    "atmospheric_state":
+    {
+        "source": "CAMS",                                   
+        "variables": {
+            "tco3": [ 289.3, "DU"],                         
+            "tcwv": [1.477, "cm"],                          
+            "aot550": 0.395,                                
+            "tc_co2": [ 425, "ppm"],                         
+            "mr_ch4": [ 1.88, "ppm"],                       
+            "pressure": [988.27, "hPa"],                    
+            "wind_speed": [ 6.23, "m/s"],                   
+            "aerosol_type": "rural",                        
+            "atmospheric_season": "midlatitude_summer"   
+        }
+    },
+    "geometry_state":
+    {
+        "source": "ADCS+DEM",                                   
+        "variables":
+        {
+            "sza": [21.286901, "degrees"], 
+            "saa": [266.86673, "degrees"], 
+            "vza": [11.634028, "degrees"], 
+            "vaa": [278.853954, "degrees"],
+            "altitude": [0.129, "km"]     
+            
+        }
+    },
+    "scene_state":
+    {
+        "source": "internal",
+        "variables":
+        {
+            "land_percentage": 21
+        }
+    }    
+}
