@@ -405,8 +405,6 @@ class StateMetaBase(BaseModelWithUnits):
     ----------
     source
         String containing the source of the state variables
-    variables
-        variables of the state
     """
 
     source: str

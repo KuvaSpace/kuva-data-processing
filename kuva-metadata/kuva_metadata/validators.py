@@ -294,7 +294,7 @@ def must_be_mixing_ratio(quantity: Quantity):
 
 
 def must_be_mixing_ratio_or_none(quantity: Quantity | None):
-    """ Checks that entry is mixing ratio or None."""
+    """Checks that entry is mixing ratio or None."""
     # Note that None check is important for quantities which may not be present in some
     # atmospheric correction methods.
     if quantity is not None:
