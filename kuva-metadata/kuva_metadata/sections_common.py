@@ -497,7 +497,7 @@ class GeometryStateVariables(BaseModelWithUnits):
     altitude
         Altitude
 
-    For sun and view azimuth angles, we are using Libradtran's viewing and sun azimuth 
+    For sun and view azimuth angles, we are using Libradtran's viewing and sun azimuth
     angle conventions. That means:
     For vaa:
     - Sensor in the North (looking South): 0 deg
@@ -568,6 +568,11 @@ class AtmosphericState(StateMetaBase):
 
     Attributes:
     -----------
+    source: str
+        Source for the atmospheric data. Typically `CAMS` or `CAMS+acolite`
+    variables: AtmosphericStateVariables
+        Variables describing the state of the atmosphere
+
     """
 
     variables: AtmosphericStateVariables
@@ -578,6 +583,10 @@ class GeometryState(StateMetaBase):
 
     Attributes:
     -----------
+    source: str
+        Source for the geometry data. Typically `ADCS` or `ADCS+DEM+GCP`
+    variables: GeometryStateVariables
+        Geometric variables describing view and altitude
     """
 
     variables: GeometryStateVariables
@@ -588,7 +597,9 @@ class SceneState(StateMetaBase):
 
     Attributes:
     -----------
-    variables
+    source: str
+        Source for the scene state
+    variables: SceneStateVariables
         Scene variables
     """
 

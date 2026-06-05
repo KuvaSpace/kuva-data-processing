@@ -19,22 +19,16 @@ from .custom_types import CRSGeometry
 from .helper_types import Polygon_, Quantity_, array_3x3_, quaternion_
 from .utils import default_ureg
 
-VALID_ATMOS_SEASONS = (
-    "midlatitude_summer",
-    "midlatitude_winter"
-)
+VALID_ATMOS_SEASONS = ("midlatitude_summer", "midlatitude_winter")
 
 VALID_ATMOS_CORRECTION_METHODS = (
     "sprinkler/acolite",
     "sprinkler/tractor",
     "acolite",
-    "tractor"
+    "tractor",
 )
 
-VALID_AEROSOL_TYPES = (
-    "rural",
-    "maritime"
-)
+VALID_AEROSOL_TYPES = ("rural", "maritime")
 
 
 def parse_camera_radiometric_ids(d: dict[str, str]) -> dict[str, UUID]:
@@ -155,7 +149,7 @@ def parse_polygon(poly: Polygon_) -> Polygon:
 def parse_quantity(quantity: Quantity_) -> Quantity:
     """Parse a Pint quantity from a tuple (value, unit)"""
     if isinstance(quantity, list):
-        if not isinstance(quant := quantity[0], (int,float)):
+        if not isinstance(quant := quantity[0], (int, float)):
             raise ValueError
         if not isinstance(unit := quantity[1], str):
             raise ValueError
@@ -253,14 +247,16 @@ def check_is_utc_datetime(timestamp: datetime) -> datetime:
 
     return timestamp
 
-def must_be_positive_float(number:float) -> float:
+
+def must_be_positive_float(number: float) -> float:
     """Parse a float and check it is greater than zero"""
     if number <= 0:
         msg = f"Should be positive ({number})"
         raise ValueError(msg)
     return number
 
-def must_be_valid_atmospheric_season(atm_season:str|None):
+
+def must_be_valid_atmospheric_season(atm_season: str | None):
     """Parse atmospheric season value and check it is one of VALID_ATMOS_SEASONS"""
     if atm_season in VALID_ATMOS_SEASONS:
         return atm_season
@@ -270,7 +266,8 @@ def must_be_valid_atmospheric_season(atm_season:str|None):
         msg = f"Atmospheric seasons must be one of {VALID_ATMOS_SEASONS}"
         raise ValueError(msg)
 
-def must_be_valid_aerosol_type(aerosol_type:str):
+
+def must_be_valid_aerosol_type(aerosol_type: str):
     """Parse atmospheric season value and check it is one of VALID_ATMOS_SEASONS"""
     if aerosol_type in VALID_AEROSOL_TYPES:
         return aerosol_type
@@ -280,7 +277,7 @@ def must_be_valid_aerosol_type(aerosol_type:str):
 
 
 def must_be_dimensionless(quantity):
-    """ Checks if quantity is dimensionless"""
+    """Checks if quantity is dimensionless"""
     quantity = parse_quantity(quantity)
     if not quantity.is_compatible_with(default_ureg.fraction):
         msg = "Quantity is not dimensionless"
@@ -289,16 +286,17 @@ def must_be_dimensionless(quantity):
 
 
 def must_be_mixing_ratio(quantity: Quantity):
-    """ Checks that mixing ratios are dimensionless and positive."""
+    """Checks that mixing ratios are dimensionless and positive."""
     quantity = parse_quantity(quantity)
     quantity = must_be_dimensionless(quantity)
     quantity = must_be_positive_quantity(quantity)
     return quantity
 
-def must_be_mixing_ratio_or_none(quantity: Quantity|None):
+
+def must_be_mixing_ratio_or_none(quantity: Quantity | None):
+    """ Checks that entry is mixing ratio or None."""
+    # Note that None check is important for quantities which may not be present in some
+    # atmospheric correction methods.
     if quantity is not None:
         quantity = must_be_mixing_ratio(quantity)
     return quantity
-
-
-
