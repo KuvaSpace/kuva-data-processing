@@ -497,6 +497,20 @@ class GeometryStateVariables(BaseModelWithUnits):
     altitude
         Altitude
 
+    For sun and view azimuth angles, we are using Libradtran's viewing and sun azimuth 
+    angle conventions. That means:
+    For vaa:
+    - Sensor in the North (looking South): 0 deg
+    - Sensor in the East (looking West): 90 deg
+    - Sensor in the South (looking North): 180 deg
+    - Sensor in the West (looking East): 270 deg
+    For saa:
+    - Sun in the South: 0 degrees
+    - Sun in the West: 90 degrees
+    - Sun in the North: 180 degrees
+    - Sun in the East: 270 degrees
+
+    The relative azimuth angle (raa) is computed as vaa-saa
     """
 
     sza: Quantity
