@@ -28,7 +28,7 @@ VALID_ATMOS_CORRECTION_METHODS = (
     "tractor",
 )
 
-VALID_AEROSOL_TYPES = ("rural", "maritime")
+VALID_AEROSOL_TYPES = ("rural", "maritime", "continental")
 
 
 def parse_camera_radiometric_ids(d: dict[str, str]) -> dict[str, UUID]:
@@ -272,7 +272,7 @@ def must_be_valid_aerosol_type(aerosol_type: str):
     if aerosol_type in VALID_AEROSOL_TYPES:
         return aerosol_type
     else:
-        msg = f"Atmospheric seasons must be one of {VALID_ATMOS_SEASONS}"
+        msg = f"Atmospheric type must be one of {VALID_AEROSOL_TYPES}"
         raise ValueError(msg)
 
 
