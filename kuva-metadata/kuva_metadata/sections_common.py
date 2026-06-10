@@ -340,7 +340,7 @@ class Image(BaseModelWithUnits):
     source_images: list[UUID4]
     measured_quantity_name: str
     measured_quantity_unit: str
-    cloud_cover_percentage: float | None
+    cloud_cover_percentage: float | None = None
     footprint: CRSGeometry | None = None
     epsg: int | None = None
     shape: tuple[int, int] | None = None  # (height, width)
@@ -448,12 +448,14 @@ class AtmosphericStateVariables(BaseModelWithUnits):
     tco3: Quantity
     tcwv: Quantity
     aot550: float
-    tc_co2: Quantity | None = Field(default=None)
-    mr_ch4: Quantity | None = Field(default=None)
+    tc_co2: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
+    mr_ch4: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
     pressure: Quantity
     wind_speed: Quantity
     aerosol_type: str  # coastal or maritime
-    atmospheric_season: str | None = Field(default=None)  # Summer or winter
+    atmospheric_season: str | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )  # Summer or winter
 
     _check_press = field_validator("pressure", mode="before")(must_be_pressure)
     _check_wind_speed = field_validator("wind_speed", mode="before")(must_be_speed)
@@ -522,10 +524,10 @@ class GeometryStateVariables(BaseModelWithUnits):
     """
 
     sza: Quantity
-    saa: Quantity | None = Field(default=None)
+    saa: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
     vza: Quantity
-    vaa: Quantity | None = Field(default=None)
-    altitude: Quantity | None = Field(default=None)
+    vaa: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
+    altitude: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
@@ -562,12 +564,14 @@ class SceneStateVariables(BaseModelWithUnits):
     land_percentage
         Percentage of land in the scene (float)"""
 
-    land_percentage: Annotated[float, Field(gt=0, lt=100)] | None
+    land_percentage: float | None = Field(
+        default=None, gt=0, lt=100, exclude_if=lambda v: v is None
+    )
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
     _check_landperc = field_validator("land_percentage", mode="before")(
-        must_be_positive_float
+        lambda value: None if value is None else must_be_positive_float(value)
     )
 
 
@@ -629,7 +633,11 @@ class AtmosphericCorrectionConfiguration(BaseModelWithUnits):
         Scene state variables
     """
 
-    method: str | None
-    atmospheric_state: AtmosphericState | None
-    geometry_state: GeometryState | None
-    scene_state: SceneState | None
+    method: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    atmospheric_state: AtmosphericState | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
+    geometry_state: GeometryState | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
+    scene_state: SceneState | None = Field(default=None, exclude_if=lambda v: v is None)
