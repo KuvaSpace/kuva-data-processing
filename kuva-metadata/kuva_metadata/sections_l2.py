@@ -1,6 +1,6 @@
 """Metadata specification for L2 products"""
 
-from pydantic import ConfigDict
+from pydantic import ConfigDict, Field
 
 # Unused imports are kept so that common objects are available with one import
 from kuva_metadata.sections_common import (  # noqa # pylint: disable=unused-import
@@ -13,6 +13,7 @@ from kuva_metadata.sections_common import (  # noqa # pylint: disable=unused-imp
 )
 from kuva_metadata.sections_l1 import (  # noqa # pylint: disable=unused-import
     Band,
+    GeolocationProcess,
     Image,
 )
 
@@ -109,6 +110,11 @@ class MetadataLevel2A(MetadataBase):
     """
 
     image: ImageL2A
-    atmospheric_correction_configuration: AtCorConfigL2A | None = None
+    atmospheric_correction_configuration: AtCorConfigL2A | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    geolocation_process: GeolocationProcess | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
