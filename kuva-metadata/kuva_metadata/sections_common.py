@@ -565,7 +565,7 @@ class SceneStateVariables(BaseModelWithUnits):
         Percentage of land in the scene (float)"""
 
     land_percentage: float | None = Field(
-        default=None, gt=0, lt=100, exclude_if=lambda v: v is None
+        default=None, ge=0, le=100, exclude_if=lambda v: v is None
     )
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)

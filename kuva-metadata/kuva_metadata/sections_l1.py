@@ -1,6 +1,6 @@
 """Metadata specification for L1 products"""
 
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 # Unused imports are kept so that common objects are available with one import
 from kuva_metadata.sections_common import (  # noqa # pylint: disable=unused-import
@@ -12,6 +12,17 @@ from kuva_metadata.sections_common import (  # noqa # pylint: disable=unused-imp
     RPCoefficients,
     Satellite,
 )
+
+DEFAULT_REFERENCE_BASEMAP_SOURCE = "esri_world_imagery"
+DEFAULT_REFERENCE_BASEMAP_URI = (
+    "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
+)
+DEFAULT_REFERENCE_DEM_URI = "https://doi.org/10.5270/ESA-c5d3d65"
+DEM_REFERENCE_SOURCE_MAP = {
+    "glo_30": "COP-DEM_GLO-30-DGED",
+    "glo_90": "COP-DEM_GLO-90-DGED",
+    "srtm_1": "SRTM1",
+}
 
 
 class BandL1AB(Band):
@@ -89,6 +100,55 @@ class MetadataLevel1AB(MetadataBase):
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
 
+class GeolocationReference(BaseModel):
+    """Reference dataset or telemetry used by a geolocation step."""
+
+    source: str
+    type: str | None = Field(default=None, exclude_if=lambda value: value is None)
+    uri: str | None = Field(default=None, exclude_if=lambda value: value is None)
+
+    model_config = ConfigDict(validate_assignment=True)
+
+
+class GeoreferencingProcess(BaseModel):
+    """Georeferencing step provenance for L1C products."""
+
+    method: str
+    reference: GeolocationReference
+
+    model_config = ConfigDict(validate_assignment=True)
+
+
+class OrthorectificationProcess(BaseModel):
+    """Orthorectification step provenance for L1C products."""
+
+    method: str
+    reference: GeolocationReference
+
+    model_config = ConfigDict(validate_assignment=True)
+
+
+class GeolocationProcessConfiguration(BaseModel):
+    """Configuration details for the geolocation process."""
+
+    georeferencing: GeoreferencingProcess
+    orthorectification: OrthorectificationProcess
+
+    model_config = ConfigDict(validate_assignment=True)
+
+
+class GeolocationProcess(BaseModel):
+    """Geolocation process provenance for L1C products."""
+
+    method: str
+    configuration: GeolocationProcessConfiguration
+    fallback_reason: str | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+
+    model_config = ConfigDict(validate_assignment=True)
+
+
 class MetadataLevel1C(MetadataBase):
     """Metadata for Level-1C products
 
@@ -99,4 +159,7 @@ class MetadataLevel1C(MetadataBase):
     """
 
     image: ImageL1C
+    geolocation_process: GeolocationProcess | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
