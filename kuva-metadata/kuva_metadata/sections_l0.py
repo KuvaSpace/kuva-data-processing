@@ -382,9 +382,29 @@ class Frame(BaseModelWithUnits):
 
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
-    def footprint(self, camera: Camera) -> Polygon:
-        """Get the ground footprint of a frame if it were taken by camera"""
-        camera_footprint = frame_footprint(self, camera, use_negative_sensor_plane=True)
+    def footprint(
+        self, camera: Camera, systematic_offset_quaternion: quaternion | None = None
+    ) -> Polygon:
+        """Get the ground footprint of a frame if it were taken by camera
+
+        Parameters
+        ----------
+        camera
+            Camera intrinsic parameters
+        systematic_offset_quaternion, optional
+            Quaternion to correct for the systematic geolocation offset of L0 products.
+            By default None
+
+        Returns
+        -------
+            The footprint on the ground as a Shapely polygon
+        """
+        camera_footprint = frame_footprint(
+            self,
+            camera,
+            use_negative_sensor_plane=True,
+            systematic_offset_quaternion=systematic_offset_quaternion,
+        )
 
         return camera_footprint
 
@@ -543,6 +563,9 @@ class Image(BaseModelWithUnits):
         The azimuth angle between the local observation point and the sun.
     local_viewing_angle
         The angle between the satellite's pointing direction and nadir.
+    altitude
+        Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84
+        ellipsoid.
     acquisition_mode
         Acquisition mode of the satellite.
     footprint
@@ -566,6 +589,7 @@ class Image(BaseModelWithUnits):
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
     local_viewing_angle: Quantity
+    altitude: Quantity | None = None
     acquisition_mode: str
     footprint: CRSGeometry
     data_cubes: dict[str, DataCube]
@@ -579,6 +603,9 @@ class Image(BaseModelWithUnits):
         "local_viewing_angle",
         mode="before",
     )(must_be_angle)
+    _check_altitude = field_validator("altitude", mode="before")(
+        must_be_positive_distance
+    )
     _parse_timestamp = field_validator(
         "end_acquisition_date", "start_acquisition_date", mode="before"
     )(parse_date)
@@ -646,9 +673,12 @@ class Image(BaseModelWithUnits):
         "local_solar_zenith_angle",
         "local_solar_azimuth_angle",
         "local_viewing_angle",
+        "altitude",
         when_used="json",
     )
-    def _serialize_quantity(self, q: Quantity):
+    def _serialize_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
     @field_serializer("footprint")

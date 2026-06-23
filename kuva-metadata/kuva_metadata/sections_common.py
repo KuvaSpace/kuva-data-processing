@@ -1,6 +1,6 @@
 import typing
 from datetime import datetime
-from typing import cast
+from typing import Annotated, cast
 from zoneinfo import ZoneInfo
 
 from pint import Quantity, UnitRegistry
@@ -27,7 +27,15 @@ from kuva_metadata.serializers import (
 from kuva_metadata.validators import (
     check_is_utc_datetime,
     must_be_angle,
+    must_be_distance,
+    must_be_mixing_ratio_or_none,
     must_be_positive_distance,
+    must_be_positive_float,
+    must_be_positive_quantity,
+    must_be_pressure,
+    must_be_speed,
+    must_be_valid_aerosol_type,
+    must_be_valid_atmospheric_season,
     parse_camera_radiometric_ids,
     parse_crs_geometry,
     parse_date,
@@ -297,6 +305,9 @@ class Image(BaseModelWithUnits):
         Solar azimuth angle of the image area
     local_viewing_angle
         The angle between the satellite's pointing direction and nadir.
+    altitude
+        Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84
+        ellipsoid.
     acquired_on
         Time of image acquisition
     source_images
@@ -324,11 +335,12 @@ class Image(BaseModelWithUnits):
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
     local_viewing_angle: Quantity
+    altitude: Quantity | None = None
     acquired_on: datetime
     source_images: list[UUID4]
     measured_quantity_name: str
     measured_quantity_unit: str
-    cloud_cover_percentage: float | None
+    cloud_cover_percentage: float | None = None
     footprint: CRSGeometry | None = None
     epsg: int | None = None
     shape: tuple[int, int] | None = None  # (height, width)
@@ -341,6 +353,9 @@ class Image(BaseModelWithUnits):
         "local_viewing_angle",
         mode="before",
     )(must_be_angle)
+    _check_altitude = field_validator("altitude", mode="before")(
+        must_be_positive_distance
+    )
     _parse_timestamp = field_validator("acquired_on", mode="before")(parse_date)
     _check_tz = field_validator("acquired_on")(check_is_utc_datetime)
     _parse_geom = field_validator("footprint", mode="before")(parse_crs_geometry)
@@ -351,9 +366,12 @@ class Image(BaseModelWithUnits):
         "local_solar_zenith_angle",
         "local_solar_azimuth_angle",
         "local_viewing_angle",
+        "altitude",
         when_used="json",
     )
-    def _serialize_quantity(self, q: Quantity):
+    def _serialize_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
         return serialize_quantity(q)
 
     @field_serializer("footprint")
@@ -388,3 +406,238 @@ class Image(BaseModelWithUnits):
     ) -> Affine | None:
         # Don't use the passed field because we get the transform from the image
         return serialize_rio_metadata(info, "transform")
+
+
+class StateMetaBase(BaseModelWithUnits):
+    """Base class for all state metadata
+
+    Attributes
+    ----------
+    source
+        String containing the source of the state variables
+    """
+
+    source: str
+
+
+class AtmosphericStateVariables(BaseModelWithUnits):
+    """Variables in the AtmosphericState
+
+    Attributes:
+    -----------
+    tco3
+        Total column of ozone [DU]
+    tcwv
+        Total column of water vapour [cm]
+    aot550
+        Aerosol optical thickness @ 550 nm
+    tc_co2
+        Total column of CO2 [ppm]
+    mr_ch4
+        Mixing ratio of methane [ppm]
+    pressure
+        Pressure [hPa]
+    wind_speed
+        Wind Speed [m/s]
+    aerosol_type
+        Aerosol type ('rural'/'maritime')
+    atmospheric_season
+        Atmospheric season ('midlatitude_summer'/'midlatitude_winter')
+    """
+
+    tco3: Quantity
+    tcwv: Quantity
+    aot550: float
+    tc_co2: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
+    mr_ch4: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
+    pressure: Quantity
+    wind_speed: Quantity
+    aerosol_type: str  # coastal or maritime
+    atmospheric_season: str | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )  # Summer or winter
+
+    _check_press = field_validator("pressure", mode="before")(must_be_pressure)
+    _check_wind_speed = field_validator("wind_speed", mode="before")(must_be_speed)
+    _check_aerosol = field_validator("aot550", mode="before")(must_be_positive_float)
+    _check_aerosol_type = field_validator("aerosol_type", mode="before")(
+        must_be_valid_aerosol_type
+    )
+    _check_tcwv = field_validator("tcwv", mode="before")(must_be_positive_distance)
+    _check_ozone = field_validator("tco3", mode="before")(must_be_positive_quantity)
+    _check_valid_atmos_seasons = field_validator("atmospheric_season", mode="before")(
+        must_be_valid_atmospheric_season
+    )
+    _check_valid_mixing_ratio = field_validator("tc_co2", "mr_ch4", mode="before")(
+        must_be_mixing_ratio_or_none
+    )
+
+    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
+
+    @field_serializer(
+        "tco3",
+        "tcwv",
+        "pressure",
+        "wind_speed",
+        when_used="json",
+    )
+    def _serialize_quantity(self, q: Quantity | None):
+        return serialize_quantity(q)
+
+    @field_serializer("tc_co2", "mr_ch4", when_used="json")
+    def _serialize_maybe_none_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
+        return serialize_quantity(q)
+
+
+class GeometryStateVariables(BaseModelWithUnits):
+    """Variables in the GeometryState
+
+    Attributes:
+    -----------
+    sza
+        Sun zenith angle
+    saa
+        Sun azimuth angle
+    vza
+        View zenith angle
+    vaa
+        View azimuth angle
+    altitude
+        Altitude
+
+    For sun and view azimuth angles, we are using Libradtran's viewing and sun azimuth
+    angle conventions. That means:
+    For vaa:
+    - Sensor in the North (looking South): 0 deg
+    - Sensor in the East (looking West): 90 deg
+    - Sensor in the South (looking North): 180 deg
+    - Sensor in the West (looking East): 270 deg
+    For saa:
+    - Sun in the South: 0 degrees
+    - Sun in the West: 90 degrees
+    - Sun in the North: 180 degrees
+    - Sun in the East: 270 degrees
+
+    The relative azimuth angle (raa) is computed as vaa-saa
+    """
+
+    sza: Quantity
+    saa: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
+    vza: Quantity
+    vaa: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
+    altitude: Quantity | None = Field(default=None, exclude_if=lambda v: v is None)
+
+    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
+
+    _check_angle = field_validator(
+        "sza",
+        "saa",
+        "vza",
+        "vaa",
+        mode="before",
+    )(must_be_angle)
+
+    _check_altitude = field_validator("altitude", mode="before")(must_be_distance)
+
+    @field_serializer(
+        "sza",
+        "vza",
+        when_used="json",
+    )
+    def _serialize_quantity(self, q: Quantity):
+        return serialize_quantity(q)
+
+    @field_serializer("saa", "vaa", "altitude", when_used="json")
+    def _serialize_maybe_none_quantity(self, q: Quantity | None):
+        if q is None:
+            return None
+        return serialize_quantity(q)
+
+
+class SceneStateVariables(BaseModelWithUnits):
+    """Variables in the SceneState
+
+    Attributes:
+    -----------
+    land_percentage
+        Percentage of land in the scene (float)"""
+
+    land_percentage: float | None = Field(
+        default=None, ge=0, le=100, exclude_if=lambda v: v is None
+    )
+
+    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
+
+    _check_landperc = field_validator("land_percentage", mode="before")(
+        lambda value: None if value is None else must_be_positive_float(value)
+    )
+
+
+class AtmosphericState(StateMetaBase):
+    """State of the atmosphere used for atmospheric correction.
+
+    Attributes:
+    -----------
+    source: str
+        Source for the atmospheric data. Typically `CAMS` or `CAMS+acolite`
+    variables: AtmosphericStateVariables
+        Variables describing the state of the atmosphere
+
+    """
+
+    variables: AtmosphericStateVariables
+
+
+class GeometryState(StateMetaBase):
+    """Geometric state (viewing, solar, geography) used for atmospheric correction.
+
+    Attributes:
+    -----------
+    source: str
+        Source for the geometry data. Typically `ADCS` or `ADCS+DEM+GCP`
+    variables: GeometryStateVariables
+        Geometric variables describing view and altitude
+    """
+
+    variables: GeometryStateVariables
+
+
+class SceneState(StateMetaBase):
+    """Scene state used for atmospheric correction.
+
+    Attributes:
+    -----------
+    source: str
+        Source for the scene state
+    variables: SceneStateVariables
+        Scene variables
+    """
+
+    variables: SceneStateVariables
+
+
+class AtmosphericCorrectionConfiguration(BaseModelWithUnits):
+    """Configuration of the atmospheric correction used
+
+    Attributes
+    ----------
+    method
+        Method used for atmospheric correction
+    atmospheric_state
+        Atmospheric state variables
+    geometry_state
+        Geometry state variables
+    scene_state
+        Scene state variables
+    """
+
+    method: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    atmospheric_state: AtmosphericState | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
+    geometry_state: GeometryState | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
+    scene_state: SceneState | None = Field(default=None, exclude_if=lambda v: v is None)

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kuva-metadata"
-version = "1.1.8"
+version = "1.1.10"
 description = "Definitions of Kuva Space product metadata"
 authors = [
   { name = "Guillem Ballesteros", email = "guillem@kuvaspace.com" },
@@ -52,5 +52,10 @@ convention = "numpy"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [ "F401", "D104", "E402",]
 
+# Supply chain attack protection
+[tool.uv]
+exclude-newer = "1 week"
+
+# Uncomment during development
 # [tool.uv.sources]
 # kuva-geometry = { path = "../kuva-geometry" }

@@ -11,6 +11,7 @@ from shapely import Point, from_wkt
 from kuva_metadata.custom_types import CRSGeometry
 from kuva_metadata.sections_common import swap_ureg_in_instance
 from kuva_metadata.sections_l0 import Band, Frame
+from kuva_metadata.sections_l2 import AtCorConfigL2A
 
 
 @pytest.fixture(scope="module")
@@ -73,6 +74,20 @@ def test_metadata_json_load(test_data_path):
 
     assert band.frames[0].integration_time.to("s").magnitude == 1.2
     assert band_with_ureg.frames[0].integration_time.to("s").magnitude == 1.2
+
+def test_atmos_metadata_json_load(test_data_path):
+    """Check that a metadata object is correctly validated from JSON"""
+    with (test_data_path / "atcor_config_metadata.json").open() as fh:
+        atcor_config_json_data = fh.read()
+    atcor_config = AtCorConfigL2A.model_validate_json(atcor_config_json_data)
+    #atcor_config_with_ureg = AtCorConfigL2A.model_validate_json_with_ureg(atcor_config_json_data, UnitRegistry())
+
+    assert atcor_config.method == "sprinkler/tractor"
+    assert atcor_config.atmospheric_state.source == "CAMS"
+    assert atcor_config.atmospheric_state.variables.pressure.to("hPa").magnitude == 988.27
+    # assert atcor_config_with_ureg.frames[0].integration_time.to("s").magnitude == 1.2
+
+
 
 
 def test_ureg_swap(ureg, band_metadata):
