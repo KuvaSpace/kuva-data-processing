@@ -256,6 +256,14 @@ def must_be_positive_float(number: float) -> float:
     return number
 
 
+def must_be_positive_or_zero_float(number: float) -> float:
+    """Parse a float and check it is greater or equal than zero"""
+    if number < 0:
+        msg = f"Should be positive or zero ({number})"
+        raise ValueError(msg)
+    return number
+
+
 def must_be_valid_atmospheric_season(atm_season: str | None):
     """Parse atmospheric season value and check it is one of VALID_ATMOS_SEASONS"""
     if atm_season in VALID_ATMOS_SEASONS:

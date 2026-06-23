@@ -31,6 +31,7 @@ from kuva_metadata.validators import (
     must_be_mixing_ratio_or_none,
     must_be_positive_distance,
     must_be_positive_float,
+    must_be_positive_or_zero_float,
     must_be_positive_quantity,
     must_be_pressure,
     must_be_speed,
@@ -571,7 +572,7 @@ class SceneStateVariables(BaseModelWithUnits):
     model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)
 
     _check_landperc = field_validator("land_percentage", mode="before")(
-        lambda value: None if value is None else must_be_positive_float(value)
+        lambda value: None if value is None else must_be_positive_or_zero_float(value)
     )
 
 
