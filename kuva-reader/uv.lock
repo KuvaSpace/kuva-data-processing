@@ -6,6 +6,10 @@ resolution-markers = [
     "python_full_version < '3.11'",
 ]
 
+[options]
+exclude-newer = "2026-06-16T11:12:18.270740268Z"
+exclude-newer-span = "P1W"
+
 [[package]]
 name = "affine"
 version = "2.4.0"
