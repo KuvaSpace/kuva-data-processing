@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from math import atan2
 
 import numpy as np
-from sympy import Matrix, cos, lambdify, sin, solve, sqrt, symbols
+from sympy import Matrix, cos, lambdify, sin, sqrt, symbols
 
 from .constants import EARTH_SEMIMAJOR_AXIS, EARTH_SEMIMINOR_AXIS
 
@@ -217,73 +217,19 @@ def basis_at_point(
     return [basis_vectors_𝜆, basis_vectors_𝜑, basis_vectors_h]
 
 
-def _solve_ray_ellipsoid_intersection():
-    # Symbols
-    # a: semimajor axis of the ellipsoid
-    # b: semiminor axis of the ellipsoid
-    # t: parametrizes position along the line
-    # u,v,w: parametrize the ray direction
-    # x0,y0,z0: parametrize the ray origin
-    a, b, t, u, v, w, x0, y0, z0 = symbols("a, b, t, u, v, w, x0, y0, z0")
+def _select_nearest_forward_t(solutions: np.ndarray) -> np.ndarray | float:
+    """Return the closest forward intersection along one or more rays."""
+    forward_solutions = np.where(solutions >= 0, solutions, np.inf)
+    shortest_t = np.min(forward_solutions, axis=0)
 
-    ray_origin = Matrix([x0, y0, z0])
-    ray_direction = Matrix([u, v, w])
+    if np.any(~np.isfinite(shortest_t)):
+        e_ = "Ray(s) don't intersect the ellipsoid in the forward direction"
+        raise ValueError(e_)
 
-    line = ray_origin + t * ray_direction
+    if np.ndim(shortest_t) == 0:
+        return float(shortest_t)
 
-    # We want to solve the following equation == 0
-    ts = solve((line[0] / a) ** 2 + (line[1] / a) ** 2 + (line[2] / b) ** 2 - 1, t)
-
-    ts_first = lambdify([a, b, u, v, w, x0, y0, z0], ts[0], modules="numpy")
-    ts_second = lambdify([a, b, u, v, w, x0, y0, z0], ts[1], modules="numpy")
-
-    return ts_first, ts_second
-
-
-_cached_ray_ellipsoid_solution = _solve_ray_ellipsoid_intersection()
-
-
-def ray_ellipsoid_intersection(
-    ray_origin: np.ndarray, ray_direction: np.ndarray, ellipsoid: Ellipsoid
-) -> np.ndarray:
-    """Calculate the intersection of a ray and an ellipsoid
-
-    Parameters
-    ----------
-    ray_origin
-        Origin point of ray
-    ray_direction
-        Direction of ray
-    ellipsoid
-        Ellipsoid to calculate intersection with
-
-    Returns
-    -------
-        Intersection of a ray and ellipsoid
-    """
-    t_1 = _cached_ray_ellipsoid_solution[0](
-        ellipsoid.major_axis,
-        ellipsoid.minor_axis,
-        *ray_direction,
-        *ray_origin,
-    )
-    t_2 = _cached_ray_ellipsoid_solution[1](
-        ellipsoid.major_axis,
-        ellipsoid.minor_axis,
-        *ray_direction,
-        *ray_origin,
-    )
-
-    t_sol = min(t_1, t_2)
-
-    return ray_origin + t_sol * ray_direction
-
-
-def ray_Earth_intersection(
-    ray_origin: np.ndarray, ray_direction: np.ndarray
-) -> np.ndarray:
-    """Calculate where a ray intersects with the Earth"""
-    return ray_ellipsoid_intersection(ray_origin, ray_direction, Earth)
+    return shortest_t
 
 
 def basis_at_geoid(𝜑: float, 𝜆: float, h: float):
@@ -291,58 +237,27 @@ def basis_at_geoid(𝜑: float, 𝜆: float, h: float):
     return basis_at_point(𝜑, 𝜆, h, Earth)
 
 
-def ray_ellipsoid_intersection_new(
+def _ray_ellipsoid_intersection_t(
     ray_origin: np.ndarray, ray_directions: np.ndarray, ellipsoid: Ellipsoid
-) -> np.ndarray:
-    """Calculate the intersection of a ray and an ellipsoid
+) -> np.ndarray | float:
+    """Return forward ray parameters for one or more ray/ellipsoid intersections."""
+    ray_origin = np.asarray(ray_origin, dtype=np.float64)
+    ray_directions = np.asarray(ray_directions, dtype=np.float64)
 
-    Parameters
-    ----------
-    ray_origin
-        Origin point of ray
-    ray_direction
-        Direction of ray
-    ellipsoid
-        Ellipsoid to calculate intersection with
+    if ray_origin.shape != (3,):
+        e_ = "Ray origin must be a 1d array of length 3"
+        raise ValueError(e_)
 
-    Returns
-    -------
-        Intersection of a ray and ellipsoid
-    """
-    shortest_t = vectorized_ray_ellipsoid_intersection(
-        ellipsoid.major_axis,
-        ellipsoid.minor_axis,
-        *ray_origin,
-        ray_directions,
-    )
+    is_single_ray = ray_directions.ndim == 1
+    ray_directions = np.atleast_2d(ray_directions)
 
-    return ray_origin + shortest_t[:, None] * ray_directions
+    if ray_directions.shape[1] != 3:
+        e_ = "Ray directions must have shape (3,) or (n_rays, 3)"
+        raise ValueError(e_)
 
-
-def vectorized_ray_ellipsoid_intersection(
-    a: float,
-    b: float,
-    x0: float,
-    y0: float,
-    z0: float,
-    ray_directions: np.ndarray,
-) -> np.ndarray:
-    """
-    Parameters
-    ----------
-    a, b
-        Axis of the ellipsoid
-    x0, y0, z0
-        Origin of the rays
-    u, v, w
-        Components of the ray direction. This can be arrays as long as all have the same len
-
-    Returns
-    -------
-    np.ndarray, np.ndarray
-
-    The two solutions for each of the rays
-    """
+    a = ellipsoid.major_axis
+    b = ellipsoid.minor_axis
+    x0, y0, z0 = ray_origin
     u, v, w = ray_directions[:, 0], ray_directions[:, 1], ray_directions[:, 2]
 
     discrim = (
@@ -362,16 +277,34 @@ def vectorized_ray_ellipsoid_intersection(
     den = a**2 * w**2 + b**2 * u**2 + b**2 * v**2
     indep = -(a**2) * w * z0 - b**2 * u * x0 - b**2 * v * y0
 
-    sol1 = (indep - b * np.sqrt(discrim)) / den
-    sol2 = (indep + b * np.sqrt(discrim)) / den
-
+    sqrt_discrim = np.sqrt(discrim)
+    sol1 = (indep - b * sqrt_discrim) / den
+    sol2 = (indep + b * sqrt_discrim) / den
     sols = np.vstack([sol1, sol2])
 
-    return np.min(sols, axis=0)
+    if is_single_ray:
+        return _select_nearest_forward_t(sols[:, 0])
+
+    return _select_nearest_forward_t(sols)
 
 
-def ray_Earth_intersection_new(
+def ray_ellipsoid_intersection(
+    ray_origin: np.ndarray, ray_directions: np.ndarray, ellipsoid: Ellipsoid
+) -> np.ndarray:
+    """Calculate the intersections of one or more rays and an ellipsoid."""
+    ray_origin = np.asarray(ray_origin, dtype=np.float64)
+    ray_directions = np.asarray(ray_directions, dtype=np.float64)
+    shortest_t = _ray_ellipsoid_intersection_t(ray_origin, ray_directions, ellipsoid)
+
+    if ray_directions.ndim == 1:
+        return ray_origin + float(shortest_t) * ray_directions
+
+    shortest_t_array = np.asarray(shortest_t, dtype=np.float64)
+    return ray_origin + shortest_t_array[:, None] * ray_directions
+
+
+def ray_Earth_intersection(
     ray_origin: np.ndarray, ray_directions: np.ndarray
 ) -> np.ndarray:
-    """Calculate where a ray intersects with the Earth"""
-    return ray_ellipsoid_intersection_new(ray_origin, ray_directions, Earth)
+    """Calculate where one or more rays intersect with the Earth."""
+    return ray_ellipsoid_intersection(ray_origin, ray_directions, Earth)

@@ -125,7 +125,7 @@ def frame_ray_Earth_intersections(
 
     rays = rays / np.sqrt((rays**2).sum(axis=1))[:, None]
 
-    intersections = ellipsoid.ray_Earth_intersection_new(sat_pos, rays)
+    intersections = ellipsoid.ray_Earth_intersection(sat_pos, rays)
 
     match mode:
         case "shapely":
