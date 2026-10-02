@@ -335,10 +335,10 @@ class Frame(BaseModelWithUnits):
         Integration time in seconds for the frame. Duration may be slightly different
         from `end_acquisition_time - start_acquisition_time` due to timing issues.
     sat_ecef_orientation
-        Orientation quaternion of the spacecraft at the start of frame acquisition.
+        Orientation quaternion of the spacecraft at the middle of frame acquisition.
     position
         ECEF geodetic coordinates (estimated from telemetry) of the position of the
-        spacecraft in at the start of frame acquisition (SRID=4978).
+        spacecraft in at the middle of frame acquisition (SRID=4978).
     viewing_zenith_angle
         Represents the satellite's viewing zenith angle in degrees as seen from the
         ground target.
