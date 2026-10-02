@@ -97,7 +97,7 @@ def sphere_ray_intersection(
         ray_dot_r0**2 - np.dot(r0, r0) + sphere_radius * sphere_radius
     )
 
-    intersection = t[:, np.newaxis] * rays + r0
+    intersection = t[:, np.newaxis] * rays + rays_origin
 
     return intersection
 
