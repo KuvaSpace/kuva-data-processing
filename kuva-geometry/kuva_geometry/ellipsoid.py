@@ -77,6 +77,13 @@ def xyz_to_ellipsoid(
 
     # initialize variables
     p = np.sqrt((x**2) + (y**2))
+
+    # Check for the exact-pole edge case
+    if p == 0:
+        if z == 0:
+            e_ = "Geodetic coordinates are undefined at the Earth center"
+            raise ValueError(e_)
+        return np.copysign(90.0, z), 0.0, abs(z) - ellipsoid.minor_axis
     𝜑_old = atan2(z, p * (1 - e**2))
 
     converged = False

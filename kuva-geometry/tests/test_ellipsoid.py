@@ -91,3 +91,16 @@ def test_ray_ellipsoid_intersection_accepts_batch_inputs():
 
     assert intersections.shape == (2, 3)
     assert np.allclose(intersections, earth_intersections)
+
+
+@pytest.mark.parametrize("latitude,height", [(90, 0), (-90, 1000), (90, 500000)])
+def test_exact_poles_are_finite(latitude, height):
+    # At the poles, abs(z) is Earth's minor axis plus height above the surface.
+    point = [0, 0, np.sign(latitude) * (Earth.minor_axis + height)]
+    actual = xyz_to_geodetic(*point)
+    np.testing.assert_allclose(actual, [latitude, 0, height], atol=1e-8, rtol=0)
+
+
+def test_geodetic_coordinates_at_earth_center_are_undefined():
+    with pytest.raises(ValueError, match="undefined at the Earth center"):
+        xyz_to_geodetic(0, 0, 0)
