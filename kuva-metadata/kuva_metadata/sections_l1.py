@@ -21,6 +21,9 @@ DEFAULT_REFERENCE_DEM_URI = "https://doi.org/10.5270/ESA-c5d3d65"
 DEM_REFERENCE_SOURCE_MAP = {
     "glo_30": "COP-DEM_GLO-30-DGED",
     "glo_90": "COP-DEM_GLO-90-DGED",
+    "glo_30_cog": "COP-DEM_GLO-30-DGED-2024_1",
+    "glo_90_cog": "COP-DEM_GLO-90-DGED-2024_1",
+    "glo_90_cog_onboard": "COP-DEM_GLO-90-DGED-2024_1",
     "srtm_1": "SRTM1",
 }
 
