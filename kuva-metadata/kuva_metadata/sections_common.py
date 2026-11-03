@@ -306,6 +306,10 @@ class Image(BaseModelWithUnits):
         Solar azimuth angle of the image area
     local_viewing_angle
         The angle between the satellite's pointing direction and nadir.
+    viewing_zenith_angle
+        Representative viewing zenith for the central VIS band.
+    viewing_azimuth_angle
+        Representative viewing azimuth for the central VIS band.
     altitude
         Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84
         ellipsoid.
@@ -336,6 +340,8 @@ class Image(BaseModelWithUnits):
     local_solar_zenith_angle: Quantity
     local_solar_azimuth_angle: Quantity
     local_viewing_angle: Quantity
+    viewing_zenith_angle: Quantity | None = None
+    viewing_azimuth_angle: Quantity | None = None
     altitude: Quantity | None = None
     acquired_on: datetime
     source_images: list[UUID4]
@@ -352,6 +358,8 @@ class Image(BaseModelWithUnits):
         "local_solar_zenith_angle",
         "local_solar_azimuth_angle",
         "local_viewing_angle",
+        "viewing_zenith_angle",
+        "viewing_azimuth_angle",
         mode="before",
     )(must_be_angle)
     _check_altitude = field_validator("altitude", mode="before")(
@@ -367,6 +375,8 @@ class Image(BaseModelWithUnits):
         "local_solar_zenith_angle",
         "local_solar_azimuth_angle",
         "local_viewing_angle",
+        "viewing_zenith_angle",
+        "viewing_azimuth_angle",
         "altitude",
         when_used="json",
     )

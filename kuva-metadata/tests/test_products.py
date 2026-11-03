@@ -11,7 +11,8 @@ from shapely import Point, from_wkt
 from kuva_metadata.custom_types import CRSGeometry
 from kuva_metadata.sections_common import swap_ureg_in_instance
 from kuva_metadata.sections_l0 import Band, Frame
-from kuva_metadata.sections_l2 import AtCorConfigL2A
+from kuva_metadata.sections_l1 import ImageL1AB, ImageL1C
+from kuva_metadata.sections_l2 import AtCorConfigL2A, ImageL2A
 
 
 @pytest.fixture(scope="module")
@@ -75,19 +76,20 @@ def test_metadata_json_load(test_data_path):
     assert band.frames[0].integration_time.to("s").magnitude == 1.2
     assert band_with_ureg.frames[0].integration_time.to("s").magnitude == 1.2
 
+
 def test_atmos_metadata_json_load(test_data_path):
     """Check that a metadata object is correctly validated from JSON"""
     with (test_data_path / "atcor_config_metadata.json").open() as fh:
         atcor_config_json_data = fh.read()
     atcor_config = AtCorConfigL2A.model_validate_json(atcor_config_json_data)
-    #atcor_config_with_ureg = AtCorConfigL2A.model_validate_json_with_ureg(atcor_config_json_data, UnitRegistry())
+    # atcor_config_with_ureg = AtCorConfigL2A.model_validate_json_with_ureg(atcor_config_json_data, UnitRegistry())
 
     assert atcor_config.method == "sprinkler/tractor"
     assert atcor_config.atmospheric_state.source == "CAMS"
-    assert atcor_config.atmospheric_state.variables.pressure.to("hPa").magnitude == 988.27
+    assert (
+        atcor_config.atmospheric_state.variables.pressure.to("hPa").magnitude == 988.27
+    )
     # assert atcor_config_with_ureg.frames[0].integration_time.to("s").magnitude == 1.2
-
-
 
 
 def test_ureg_swap(ureg, band_metadata):
@@ -102,3 +104,34 @@ def test_ureg_swap(ureg, band_metadata):
     new_band = cast(Band, swap_ureg_in_instance(band_metadata, other_ureg))
     with pytest.raises(ValueError):
         _ = frame_int + new_band.frames[0].integration_time
+
+
+@pytest.mark.parametrize("image_type", [ImageL1AB, ImageL1C, ImageL2A])
+def test_product_viewing_angles_are_nullable_and_serialize_in_degrees(image_type, ureg):
+    """Expose a product pair independently of the per-band angle fields."""
+    image = image_type(
+        bands=[],
+        local_solar_zenith_angle=30 * ureg.degree,
+        local_solar_azimuth_angle=120 * ureg.degree,
+        local_viewing_angle=8 * ureg.degree,
+        acquired_on=datetime.datetime(2025, 1, 1, tzinfo=datetime.timezone.utc),
+        source_images=[],
+        measured_quantity_name="radiance",
+        measured_quantity_unit="W",
+    )
+    context = {
+        "epsg": None,
+        "shape": None,
+        "gsd_h": None,
+        "gsd_w": None,
+        "transform": None,
+    }
+    serialized = image.model_dump(mode="json", context=context)
+    assert serialized["viewing_zenith_angle"] is None
+    assert serialized["viewing_azimuth_angle"] is None
+
+    image.viewing_zenith_angle = 11 * ureg.degree
+    image.viewing_azimuth_angle = 47 * ureg.degree
+    serialized = image.model_dump(mode="json", context=context)
+    assert serialized["viewing_zenith_angle"] == [11, "degree"]
+    assert serialized["viewing_azimuth_angle"] == [47, "degree"]
