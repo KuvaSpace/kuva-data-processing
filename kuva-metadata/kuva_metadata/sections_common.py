@@ -307,9 +307,13 @@ class Image(BaseModelWithUnits):
     local_viewing_angle
         The angle between the satellite's pointing direction and nadir.
     viewing_zenith_angle
-        Representative viewing zenith for the central VIS band.
+        Indicative product-level viewing zenith angle calculated from the central VIS
+        band. For scientific analysis, use the per-band viewing angles in
+        ``viewing_angles.tif``.
     viewing_azimuth_angle
-        Representative viewing azimuth for the central VIS band.
+        Indicative product-level viewing azimuth angle calculated from the central VIS
+        band. For scientific analysis, use the per-band viewing angles in
+        ``viewing_angles.tif``.
     altitude
         Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84
         ellipsoid.

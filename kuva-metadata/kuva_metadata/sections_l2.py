@@ -55,6 +55,14 @@ class ImageL2A(Image):
         Solar azimuth angle of the image area
     local_viewing_angle
         The angle between the satellite's pointing direction and nadir.
+    viewing_zenith_angle
+        Indicative product-level viewing zenith angle calculated from the central VIS
+        band. For scientific analysis, use the per-band viewing angles in
+        ``viewing_angles.tif``.
+    viewing_azimuth_angle
+        Indicative product-level viewing azimuth angle calculated from the central VIS
+        band. For scientific analysis, use the per-band viewing angles in
+        ``viewing_angles.tif``.
     acquired_on
         Time of image acquisition
     source_images
