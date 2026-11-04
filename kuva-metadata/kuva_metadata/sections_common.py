@@ -308,12 +308,19 @@ class Image(BaseModelWithUnits):
         Angle (degrees) between spacecraft body +Z and geocentric nadir (the direction
         toward Earth's center), measured at the satellite.
     viewing_zenith_angle
-        Indicative product-level viewing zenith angle calculated from the central VIS
-        band. For scientific analysis, use the per-band viewing angles in
-        ``viewing_angles.tif``.
+        Representative product-level viewing zenith angle (degrees). It is measured at
+        the WGS84 ellipsoid intersection of the optical-center ray from the first frame
+        of the reference L0 product's central VIS band, between the ellipsoid normal
+        (local geodetic zenith) and the direction to the satellite. Unlike
+        ``local_viewing_angle``, which measures the spacecraft body +Z axis against
+        geocentric nadir (the direction toward Earth's center) at the satellite, this is
+        a ground-based line-of-sight angle. For spatially varying angles, use the
+        per-band maps in ``viewing_angles.tif``.
     viewing_azimuth_angle
-        Indicative product-level viewing azimuth angle calculated from the central VIS
-        band. For scientific analysis, use the per-band viewing angles in
+        Representative product-level viewing azimuth angle (degrees), measured clockwise
+        from geodetic north to the ground-to-satellite direction projected onto the
+        local tangent plane. It uses the same ground point and L0 frame as
+        ``viewing_zenith_angle``. For spatially varying angles, use the per-band maps in
         ``viewing_angles.tif``.
     altitude
         Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84

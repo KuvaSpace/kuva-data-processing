@@ -340,11 +340,14 @@ class Frame(BaseModelWithUnits):
         ECEF geodetic coordinates (estimated from telemetry) of the position of the
         spacecraft in at the middle of frame acquisition (SRID=4978).
     viewing_zenith_angle
-        Represents the satellite's viewing zenith angle in degrees as seen from the
-        ground target.
+        Viewing zenith angle (degrees) for this frame. At the WGS84 ellipsoid
+        intersection of the camera optical-center ray, it is the angle between the
+        ellipsoid normal (local geodetic zenith) and the direction from that ground
+        point to the satellite.
     viewing_azimuth_angle
-        Represents the satellite's horizontal direction in degrees from the
-        ground target, measured clockwise from north.
+        Viewing azimuth angle (degrees) for this frame, measured clockwise from geodetic
+        north to the ground-to-satellite direction projected onto the local tangent
+        plane at the same ground point.
     camera_name
         Name of the camera that acquired the frame.
     """
