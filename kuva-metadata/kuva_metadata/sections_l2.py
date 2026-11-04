@@ -54,7 +54,8 @@ class ImageL2A(Image):
     local_solar_azimuth_angle
         Solar azimuth angle of the image area
     local_viewing_angle
-        The angle between the satellite's pointing direction and nadir.
+        Angle (degrees) between spacecraft body +Z and geocentric nadir (the direction
+        toward Earth's center), measured at the satellite.
     viewing_zenith_angle
         Indicative product-level viewing zenith angle calculated from the central VIS
         band. For scientific analysis, use the per-band viewing angles in

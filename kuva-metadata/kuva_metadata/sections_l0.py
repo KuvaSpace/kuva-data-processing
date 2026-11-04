@@ -562,7 +562,8 @@ class Image(BaseModelWithUnits):
     local_solar_azimuth_angle
         The azimuth angle between the local observation point and the sun.
     local_viewing_angle
-        The angle between the satellite's pointing direction and nadir.
+        Angle (degrees) between spacecraft body +Z and geocentric nadir (the direction
+        toward Earth's center), measured at the satellite.
     altitude
         Altitude of the satellite relative to WGS84, i.e. the height above the WGS-84
         ellipsoid.
