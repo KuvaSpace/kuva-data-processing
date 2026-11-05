@@ -327,6 +327,11 @@ class Image(BaseModelWithUnits):
         ellipsoid.
     acquired_on
         Time of image acquisition
+    imaging_mode
+        Acquisition mode in which the image was acquired. In ``pointing`` mode,
+        the satellite keeps the sensor aimed at a fixed location on Earth during
+        the pass. In ``scanning`` mode, it keeps the sensor at nadir or at a fixed
+        across-track off-nadir angle during the pass.
     source_images
         List of database IDs of images this L1 product image has been stitched from
     measured_quantity_name
@@ -356,6 +361,7 @@ class Image(BaseModelWithUnits):
     viewing_azimuth_angle: Quantity | None = None
     altitude: Quantity | None = None
     acquired_on: datetime
+    imaging_mode: str | None = None
     source_images: list[UUID4]
     measured_quantity_name: str
     measured_quantity_unit: str
