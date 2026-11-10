@@ -29,7 +29,7 @@ scripts.make-l1-meta = "kuva_reader.reader.level1:generate_level_1_metafile"
 [dependency-groups]
 dev = [
   "pyright>=1.1.403",
-  "pytest>=7.4.2,<8",
+  "pytest>=8.4,<10",
   "ruff>=0.12.4",
 ]
 
